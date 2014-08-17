@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: Plugins Last Updated Column
- * Plugin URI: http://StevenKohlmeyer.com/sk_post_type_access_plugin
+ * Plugin URI: http://stevenkohlmeyer.com/plugins-last-updated-column/
  * Description: This restricts access to content types and menu links to those content types by role
  * Version: 0.0.1
  * Author: Fastmover
