@@ -3,7 +3,7 @@ Contributors: Fastmover
 Tags: access, access restrictions, content type access, content type restrictions, read access
 Requires at least: 3.7
 Tested up to: 3.9.2
-Stable tag: 0.0.1
+Stable tag: 0.0.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -19,8 +19,15 @@ This plugin adds a column to the plugin's page in Wordpress's admin to show when
 2. Activate the plugin through the 'Plugins' menu in WordPress
 3. That's it. You're ready to go!
 
+== Screenshots ==
+
+1. As you can see, the plugins table now has a column on the right side labeled: Last Updated.
+
 
 == Changelog ==
+
+= 0.0.2 =
+* Column is now responsive and disabled white-space wrapping for easier reading.
 
 = 0.0.1 =
 * Plugin adds a last updated column to the plugins page of the admin.

@@ -3,7 +3,7 @@
  * Plugin Name: Plugins Last Updated Column
  * Plugin URI: http://stevenkohlmeyer.com/plugins-last-updated-column/
  * Description: This restricts access to content types and menu links to those content types by role
- * Version: 0.0.1
+ * Version: 0.0.2
  * Author: Fastmover
  * Author URI: http://StevenKohlmeyer.com
  * License: GPLv2 or later
