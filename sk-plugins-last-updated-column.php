@@ -16,6 +16,9 @@ class SK_Plugins_Last_Updated_Column {
 
         add_filter( 'manage_plugins_columns', array( $this, 'columnHeading' ) );
         add_action( 'manage_plugins_custom_column' , array( $this, 'columnData' ), 10, 3 );
+        add_action( 'admin_head', array( $this, 'css' ) );
+
+        $this->firstColumnHeading = true;
 
     }
 
@@ -25,7 +28,10 @@ class SK_Plugins_Last_Updated_Column {
 
             $pluginDirectory = explode('/', $plugin_file);
             $lastUpdated = $this->getPluginsLastUpdated($pluginDirectory[0]);
-            echo $lastUpdated;
+            ?>
+            <span class="lastUpdatedMobileTitle">Last Updated: </span>
+            <span><?php echo $lastUpdated; ?></span>
+            <?php
 
         }
 
@@ -70,9 +76,34 @@ class SK_Plugins_Last_Updated_Column {
 
     function columnHeading( $columns ) {
 
-        $columns['sk_plugin_last_updated'] = 'Last Updated';
+        $columns['sk_plugin_last_updated'] = '<span>Last Updated</span>';
         return $columns;
 
+    }
+
+    function css() {
+        ?>
+        <style type="text/css">
+            @media screen and (max-width:782px) {
+                #the-list .column-sk_plugin_last_updated {
+                    display: block;
+                    width: auto;
+                }
+                #the-list span.lastUpdatedMobileTitle {
+                    display: inline;
+                }
+                tfoot .column-sk_plugin_last_updated {
+                    display: none;
+                }
+            }
+            .column-sk_plugin_last_updated span {
+                white-space: nowrap;
+            }
+            .lastUpdatedMobileTitle {
+                display: none;
+            }
+        </style>
+        <?php
     }
 
 }
