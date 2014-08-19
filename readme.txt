@@ -26,7 +26,7 @@ This plugin adds a column to the plugin's page in Wordpress's admin to show when
 
 == Changelog ==
 
-= 0.0.2 =
+= 0.0.3 =
 * Updated plugin description and tags
 
 = 0.0.2 =
