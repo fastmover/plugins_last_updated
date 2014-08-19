@@ -2,8 +2,8 @@
 /**
  * Plugin Name: Plugins Last Updated Column
  * Plugin URI: http://stevenkohlmeyer.com/plugins-last-updated-column/
- * Description: This restricts access to content types and menu links to those content types by role
- * Version: 0.0.2
+ * Description: This plugin adds a 'Last Updated' column to the admin plugins page.
+ * Version: 0.0.3
  * Author: Fastmover
  * Author URI: http://StevenKohlmeyer.com
  * License: GPLv2 or later
