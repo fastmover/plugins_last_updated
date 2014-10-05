@@ -26,12 +26,101 @@ class SK_Plugins_Last_Updated_Column {
 
         if ( 'sk_plugin_last_updated' == $column_name ) {
 
+            $color = "";
+            $msg = "";
+
             $pluginDirectory = explode('/', $plugin_file);
             $lastUpdated = $this->getPluginsLastUpdated($pluginDirectory[0]);
+
+
+
+
+
             ?>
-            <span class="lastUpdatedMobileTitle">Last Updated: </span>
-            <span><?php echo $lastUpdated; ?></span>
+            <span class="lastUpdatedMobileTitle">Last Updated: </span><?php
+
+            if( $lastUpdated !== "-1" && $lastUpdated !== -1 ) {
+
+                if( ! isset( $this->currentDateTime ) ) {
+
+                    $this->currentDateTime = new DateTime();
+
+                }
+
+                $warningLevel = 1;
+
+                $stringTime = strtotime( $lastUpdated );
+                $dateLastUpdated = Date( 'Y-m-d', $stringTime );
+                $lastUpdatedDateTime = new DateTime( $dateLastUpdated );
+//                $currentDateTime = new DateTime( 'Y-m-d' );
+
+                $dayDiff = $this->currentDateTime->diff(    $lastUpdatedDateTime, true )->d;
+                $monthDiff = $this->currentDateTime->diff(  $lastUpdatedDateTime, true )->m;
+                $yearDiff = $this->currentDateTime->diff(   $lastUpdatedDateTime, true )->y;
+
+
+                if( $yearDiff === 0 ) {
+                    if( $monthDiff > 6 ) {
+                        $warningLevel = 2;
+                    }
+                } else {
+                    $msg .= $yearDiff . " Years ";
+                    if( $yearDiff < 2 ) {
+                        $warningLevel = 3;
+                        if( $yearDiff < 1 ) {
+                            $warningLevel = 2;
+                        }
+                    } else {
+                        $warningLevel = 4;
+                    }
+                }
+
+                if( $monthDiff !== 0 ) {
+                    $msg .= $monthDiff . " Mon. ";
+                }
+
+                if( $dayDiff !== 0 ) {
+                    $msg .=  $dayDiff . " Days";
+                }
+
+                switch( $warningLevel ) {
+
+                    case 1:
+                        // Green
+                        $color = "#00ff00";
+                        break;
+                    case 2:
+                        // Yellow
+                        $color = "#F2FF00";
+                        break;
+                    case 3:
+                        // Orange
+                        $color = "#FFA600";
+                        break;
+                    case 4:
+                        // Red
+                        $color = "#ff0000";
+                        break;
+
+                }
+
+
+                ?>
+                <span><?php echo $lastUpdated; ?></span>
+
             <?php
+
+            } else {
+                ?>
+                <span>Not Available</span><?php
+            }
+
+            ?>
+
+            <span style="background-color: <?php echo $color; ?>"><?php echo $msg; ?></span>
+            <?php
+
+
 
         }
 
@@ -39,29 +128,30 @@ class SK_Plugins_Last_Updated_Column {
 
     function getPluginsLastUpdated($pluginSlug) {
 
-        if(!get_transient('sk_plugins_last_updated' . $pluginSlug)) {
 
-            include_once(ABSPATH . 'wp-admin/includes/plugin-install.php');
+        if( ! get_transient( 'sk_plugins_last_updated' . $pluginSlug ) ) {
+
+            include_once( ABSPATH . 'wp-admin/includes/plugin-install.php' );
 
             $call_api = plugins_api( 'plugin_information', array( 'slug' => $pluginSlug, 'fields' => array('last_updated') ) );
 
             /** Check for Errors & Display the results */
             if ( is_wp_error( $call_api ) ) {
 
-                set_transient('sk_plugins_last_updated' . $pluginSlug, 'Not Availble', 86400);
-                return "Not Available";
+                set_transient('sk_plugins_last_updated' . $pluginSlug, -1, 86400);
+                return -1;
 
             } else {
 
                 if ( ! empty( $call_api->last_updated ) ) {
 
-                    set_transient('sk_plugins_last_updated' . $pluginSlug, $call_api->last_updated, 86400);
+                    set_transient( 'sk_plugins_last_updated' . $pluginSlug, $call_api->last_updated, 86400 );
                     return $call_api->last_updated;
 
                 } else {
 
-                    set_transient('sk_plugins_last_updated' . $pluginSlug, 'Not Availble', 86400);
-                    return "Not Available";
+                    set_transient( 'sk_plugins_last_updated' . $pluginSlug, -1, 86400 );
+                    return -1;
 
                 }
 
@@ -69,7 +159,11 @@ class SK_Plugins_Last_Updated_Column {
 
         } else {
 
-            return get_transient('sk_plugins_last_updated' . $pluginSlug);
+            //Debugging purposes:
+            //delete_transient( 'sk_plugins_last_updated' . $pluginSlug );
+
+
+            return get_transient( 'sk_plugins_last_updated' . $pluginSlug );
 
         }
     }
