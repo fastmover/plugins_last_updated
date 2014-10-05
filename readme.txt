@@ -2,8 +2,8 @@
 Contributors: Fastmover
 Tags: plugins, plugins last updated, last updated, updated
 Requires at least: 3.7
-Tested up to: 3.9.2
-Stable tag: 0.0.3
+Tested up to: 4.0
+Stable tag: 0.0.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -25,6 +25,10 @@ This plugin adds a column to the plugin's page in Wordpress's admin to show when
 
 
 == Changelog ==
+
+= 0.0.4 =
+* Now outputs how long it's been since the last update
+* Background of this text is colored based on how long it's been: (over 2 years is red, over 1 year is orange, over 6 months is yellow and less than 6 months is green)
 
 = 0.0.3 =
 * Updated plugin description and tags
