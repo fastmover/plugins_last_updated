@@ -3,7 +3,7 @@
  * Plugin Name: Plugins Last Updated Column
  * Plugin URI: http://stevenkohlmeyer.com/plugins-last-updated-column/
  * Description: This plugin adds a 'Last Updated' column to the admin plugins page.
- * Version: 0.0.4
+ * Version: 0.0.5
  * Author: Fastmover
  * Author URI: http://StevenKohlmeyer.com
  * License: GPLv2 or later
@@ -32,10 +32,6 @@ class SK_Plugins_Last_Updated_Column {
             $pluginDirectory = explode('/', $plugin_file);
             $lastUpdated = $this->getPluginsLastUpdated($pluginDirectory[0]);
 
-
-
-
-
             ?>
             <span class="lastUpdatedMobileTitle">Last Updated: </span><?php
 
@@ -47,16 +43,16 @@ class SK_Plugins_Last_Updated_Column {
 
                 }
 
+                $stringTime             = strtotime( $lastUpdated );
+                $dateLastUpdated        = Date( 'Y-m-d', $stringTime );
+                $lastUpdatedDateTime    = new DateTime( $dateLastUpdated );
+
+                $dayDiff    = $this->currentDateTime->diff(    $lastUpdatedDateTime, true )->d;
+                $monthDiff  = $this->currentDateTime->diff(  $lastUpdatedDateTime, true )->m;
+                $yearDiff   = $this->currentDateTime->diff(   $lastUpdatedDateTime, true )->y;
+
+
                 $warningLevel = 1;
-
-                $stringTime = strtotime( $lastUpdated );
-                $dateLastUpdated = Date( 'Y-m-d', $stringTime );
-                $lastUpdatedDateTime = new DateTime( $dateLastUpdated );
-//                $currentDateTime = new DateTime( 'Y-m-d' );
-
-                $dayDiff = $this->currentDateTime->diff(    $lastUpdatedDateTime, true )->d;
-                $monthDiff = $this->currentDateTime->diff(  $lastUpdatedDateTime, true )->m;
-                $yearDiff = $this->currentDateTime->diff(   $lastUpdatedDateTime, true )->y;
 
 
                 if( $yearDiff === 0 ) {
@@ -122,6 +118,68 @@ class SK_Plugins_Last_Updated_Column {
 
 
 
+        } elseif ( 'sk_plugin_last_upgraded' == $column_name ) {
+
+            ?><span class="lastUpgradedMobileTitle">Last Upgraded: </span><?php
+
+
+
+            $version = $plugin_data['Version'];
+
+            if( isset( $plugin_data['slug'] ) ) {
+
+                $slug = $plugin_data['slug'];
+
+            } else {
+
+                $slug = sanitize_title( $plugin_file );
+
+            }
+
+            $lastUpgradedOutput = "";
+
+            $lastUpgradedSlug   = 'plugin_last_upgraded_version_' . $slug;
+            $lastUpgradedDate   = 'plugin_last_upgraded_date_' . $slug;
+            $lastVersion        = get_option( $lastUpgradedSlug, false );
+            $lastDate           = get_option( $lastUpgradedDate, false );
+
+            if( $lastDate === false ) {
+
+                add_option( $lastUpgradedDate, "Not Available" );
+                $lastUpgradedOutput = "Not Available";
+
+            } else {
+
+                $lastUpgradedOutput = $lastDate;
+
+            }
+
+            if( ! $lastVersion or $lastVersion !== $version ) {
+
+                if( $lastVersion === false ) {
+
+                    add_option( $lastUpgradedSlug, $version );
+
+                } else {
+
+                    update_option( $lastUpgradedSlug, $version );
+
+                }
+
+                if( $lastDate !== false ) {
+
+                    $lastUpgradedOutput = Date( 'Y-m-d' );
+                    update_option( $lastUpgradedDate, $lastUpgradedOutput );
+
+                }
+
+            }
+
+
+            ?><span><?php echo $lastUpgradedOutput; ?></span><?php
+
+
+
         }
 
     }
@@ -171,6 +229,7 @@ class SK_Plugins_Last_Updated_Column {
     function columnHeading( $columns ) {
 
         $columns['sk_plugin_last_updated'] = '<span>Last Updated</span>';
+        $columns['sk_plugin_last_upgraded'] = '<span>Last Upgraded</span>';
         return $columns;
 
     }
@@ -179,21 +238,26 @@ class SK_Plugins_Last_Updated_Column {
         ?>
         <style type="text/css">
             @media screen and (max-width:782px) {
-                #the-list .column-sk_plugin_last_updated {
+                #the-list .column-sk_plugin_last_updated,
+                #the-list .column-sk_plugin_last_upgraded {
                     display: block;
                     width: auto;
                 }
-                #the-list span.lastUpdatedMobileTitle {
+                #the-list span.lastUpdatedMobileTitle,
+                #the-list span.lastUpgradedMobileTitle {
                     display: inline;
                 }
-                tfoot .column-sk_plugin_last_updated {
+                tfoot .column-sk_plugin_last_updated,
+                tfoot .column-sk_plugin_last_upgraded {
                     display: none;
                 }
             }
             .column-sk_plugin_last_updated span {
                 white-space: nowrap;
             }
-            .lastUpdatedMobileTitle {
+            .lastUpdatedMobileTitle,
+            .lastUpgradedMobileTitle
+            {
                 display: none;
             }
         </style>
