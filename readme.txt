@@ -2,7 +2,7 @@
 Contributors: Fastmover
 Tags: plugins, plugins last updated, last updated, updated
 Requires at least: 3.7
-Tested up to: 4.1
+Tested up to: 4.0.1
 Stable tag: 0.0.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -25,6 +25,9 @@ This plugin adds a column to the plugin's page in Wordpress's admin to show when
 
 
 == Changelog ==
+
+= 0.0.5 =
+* New column to show when the plugin was last upgraded - shows not available until each plugin is upgraded at least once.
 
 = 0.0.4 =
 * Now outputs how long it's been since the last update
