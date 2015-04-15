@@ -9,6 +9,11 @@
  * License: GPLv2 or later
  */
 
+// PHP Version Check, not the most elegant way, but better than nothing.
+$required_php_version = '5.3.0';
+if ( version_compare( phpversion(), $required_php_version, '>') ) {
+    $SK_Plugins_Last_Updated_Column = new SK_Plugins_Last_Updated_Column();
+}
 
 class SK_Plugins_Last_Updated_Column {
 
@@ -265,7 +270,3 @@ class SK_Plugins_Last_Updated_Column {
     }
 
 }
-
-$SK_Plugins_Last_Updated_Column = new SK_Plugins_Last_Updated_Column();
-
-?>
