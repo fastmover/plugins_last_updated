@@ -3,12 +3,15 @@
  * Plugin Name: Plugins Last Updated Column
  * Plugin URI: http://stevenkohlmeyer.com/plugins-last-updated-column/
  * Description: This plugin adds a 'Last Updated' column to the admin plugins page.
- * Version: 0.0.5
+ * Version: 0.0.6
  * Author: Fastmover
  * Author URI: http://StevenKohlmeyer.com
  * License: GPLv2 or later
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
 
 class SK_Plugins_Last_Updated_Column {
 
@@ -19,6 +22,16 @@ class SK_Plugins_Last_Updated_Column {
         add_action( 'admin_head', array( $this, 'css' ) );
 
         $this->firstColumnHeading = true;
+
+    }
+
+    function timeDiff( $start, $end ) {
+
+//        To Add php 5.2 support or not?
+
+//        http://stackoverflow.com/questions/4033224/what-can-use-for-datetimediff-for-php-5-2
+
+//        https://github.com/symphonycms/symphony-2/commit/c8b0ee87ce0f72cad2ac5ba1c88ddd7c258bfc62
 
     }
 
