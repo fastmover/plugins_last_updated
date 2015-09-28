@@ -26,6 +26,10 @@ This plugin adds a column to the plugin's page in Wordpress's admin to show when
 
 == Changelog ==
 
+= 0.0.6 =
+* Changed caching from 24 hours to 30 minutes.
+* 
+
 = 0.0.5 =
 * New column to show when the plugin was last upgraded - shows not available until each plugin is upgraded at least once.
 

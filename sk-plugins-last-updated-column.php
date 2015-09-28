@@ -9,23 +9,32 @@
  * License: GPLv2 or later
  */
 
-if ( ! defined( 'ABSPATH' ) ) {
+if ( ! defined ( 'ABSPATH' ) ) {
     exit;
 }
 
-class SK_Plugins_Last_Updated_Column {
+class SK_Plugins_Last_Updated_Column
+{
 
-    function __construct() {
+    public $cacheTime    = 1800;
 
-        add_filter( 'manage_plugins_columns', array( $this, 'columnHeading' ) );
-        add_action( 'manage_plugins_custom_column' , array( $this, 'columnData' ), 10, 3 );
-        add_action( 'admin_head', array( $this, 'css' ) );
+    public $slugUpdated  = "sk-plugin-last-updated";
+
+    public $slugUpgraded = "sk-plugin-last-upgraded";
+
+    function __construct ()
+    {
+
+        add_filter ( 'manage_plugins_columns', array ( $this, 'columnHeading' ) );
+        add_action ( 'manage_plugins_custom_column', array ( $this, 'columnData' ), 10, 3 );
+        add_action ( 'admin_head', array ( $this, 'css' ) );
 
         $this->firstColumnHeading = true;
 
     }
 
-    function timeDiff( $start, $end ) {
+    function timeDiff ( $start, $end )
+    {
 
 //        To Add php 5.2 support or not?
 
@@ -35,48 +44,49 @@ class SK_Plugins_Last_Updated_Column {
 
     }
 
-    function columnData( $column_name, $plugin_file, $plugin_data ) {
+    function columnData ( $columnName, $pluginFile, $pluginData )
+    {
 
-        if ( 'sk_plugin_last_updated' == $column_name ) {
+        if ( $this->slugUpdated == $columnName ) {
 
             $color = "";
-            $msg = "";
+            $msg   = "";
 
-            $pluginDirectory = explode('/', $plugin_file);
-            $lastUpdated = $this->getPluginsLastUpdated($pluginDirectory[0]);
+            $pluginDirectory = explode ( '/', $pluginFile );
+            $lastUpdated     = $this->getPluginsLastUpdated ( $pluginDirectory[ 0 ] );
 
             ?>
             <span class="lastUpdatedMobileTitle">Last Updated: </span><?php
 
-            if( $lastUpdated !== "-1" && $lastUpdated !== -1 ) {
+            if ( $lastUpdated !== "-1" && $lastUpdated !== -1 ) {
 
-                if( ! isset( $this->currentDateTime ) ) {
+                if ( ! isset( $this->currentDateTime ) ) {
 
                     $this->currentDateTime = new DateTime();
 
                 }
 
-                $stringTime             = strtotime( $lastUpdated );
-                $dateLastUpdated        = Date( 'Y-m-d', $stringTime );
-                $lastUpdatedDateTime    = new DateTime( $dateLastUpdated );
+                $stringTime          = strtotime ( $lastUpdated );
+                $dateLastUpdated     = Date ( 'Y-m-d', $stringTime );
+                $lastUpdatedDateTime = new DateTime( $dateLastUpdated );
 
-                $dayDiff    = $this->currentDateTime->diff(    $lastUpdatedDateTime, true )->d;
-                $monthDiff  = $this->currentDateTime->diff(  $lastUpdatedDateTime, true )->m;
-                $yearDiff   = $this->currentDateTime->diff(   $lastUpdatedDateTime, true )->y;
+                $dayDiff   = $this->currentDateTime->diff ( $lastUpdatedDateTime, true )->d;
+                $monthDiff = $this->currentDateTime->diff ( $lastUpdatedDateTime, true )->m;
+                $yearDiff  = $this->currentDateTime->diff ( $lastUpdatedDateTime, true )->y;
 
 
                 $warningLevel = 1;
 
 
-                if( $yearDiff === 0 ) {
-                    if( $monthDiff > 6 ) {
+                if ( $yearDiff === 0 ) {
+                    if ( $monthDiff > 6 ) {
                         $warningLevel = 2;
                     }
                 } else {
                     $msg .= $yearDiff . " Years ";
-                    if( $yearDiff < 2 ) {
+                    if ( $yearDiff < 2 ) {
                         $warningLevel = 3;
-                        if( $yearDiff < 1 ) {
+                        if ( $yearDiff < 1 ) {
                             $warningLevel = 2;
                         }
                     } else {
@@ -84,15 +94,15 @@ class SK_Plugins_Last_Updated_Column {
                     }
                 }
 
-                if( $monthDiff !== 0 ) {
+                if ( $monthDiff !== 0 ) {
                     $msg .= $monthDiff . " Mon. ";
                 }
 
-                if( $dayDiff !== 0 ) {
-                    $msg .=  $dayDiff . " Days";
+                if ( $dayDiff !== 0 ) {
+                    $msg .= $dayDiff . " Days";
                 }
 
-                switch( $warningLevel ) {
+                switch ( $warningLevel ) {
 
                     case 1:
                         // Green
@@ -117,7 +127,7 @@ class SK_Plugins_Last_Updated_Column {
                 ?>
                 <span><?php echo $lastUpdated; ?></span>
 
-            <?php
+                <?php
 
             } else {
                 ?>
@@ -125,40 +135,38 @@ class SK_Plugins_Last_Updated_Column {
             }
 
             ?>
-
+            <br/>
             <span style="background-color: <?php echo $color; ?>"><?php echo $msg; ?></span>
             <?php
 
 
-
-        } elseif ( 'sk_plugin_last_upgraded' == $column_name ) {
+        } elseif ( $this->slugUpgraded == $columnName ) {
 
             ?><span class="lastUpgradedMobileTitle">Last Upgraded: </span><?php
 
 
+            $version = $pluginData[ 'Version' ];
 
-            $version = $plugin_data['Version'];
+            if ( isset( $pluginData[ 'slug' ] ) ) {
 
-            if( isset( $plugin_data['slug'] ) ) {
-
-                $slug = $plugin_data['slug'];
+                $slug = $pluginData[ 'slug' ];
 
             } else {
 
-                $slug = sanitize_title( $plugin_file );
+                $slug = sanitize_title ( $pluginFile );
 
             }
 
             $lastUpgradedOutput = "";
 
-            $lastUpgradedSlug   = 'plugin_last_upgraded_version_' . $slug;
-            $lastUpgradedDate   = 'plugin_last_upgraded_date_' . $slug;
-            $lastVersion        = get_option( $lastUpgradedSlug, false );
-            $lastDate           = get_option( $lastUpgradedDate, false );
+            $lastUpgradedSlug = 'plugin_last_upgraded_version_' . $slug;
+            $lastUpgradedDate = 'plugin_last_upgraded_date_' . $slug;
+            $lastVersion      = get_option ( $lastUpgradedSlug, false );
+            $lastDate         = get_option ( $lastUpgradedDate, false );
 
-            if( $lastDate === false ) {
+            if ( $lastDate === false ) {
 
-                add_option( $lastUpgradedDate, "Not Available" );
+                add_option ( $lastUpgradedDate, "Not Available" );
                 $lastUpgradedOutput = "Not Available";
 
             } else {
@@ -167,22 +175,22 @@ class SK_Plugins_Last_Updated_Column {
 
             }
 
-            if( ! $lastVersion or $lastVersion !== $version ) {
+            if ( ! $lastVersion or $lastVersion !== $version ) {
 
-                if( $lastVersion === false ) {
+                if ( $lastVersion === false ) {
 
-                    add_option( $lastUpgradedSlug, $version );
+                    add_option ( $lastUpgradedSlug, $version );
 
                 } else {
 
-                    update_option( $lastUpgradedSlug, $version );
+                    update_option ( $lastUpgradedSlug, $version );
 
                 }
 
-                if( $lastDate !== false ) {
+                if ( $lastDate !== false ) {
 
-                    $lastUpgradedOutput = Date( 'Y-m-d' );
-                    update_option( $lastUpgradedDate, $lastUpgradedOutput );
+                    $lastUpgradedOutput = Date ( 'Y-m-d' );
+                    update_option ( $lastUpgradedDate, $lastUpgradedOutput );
 
                 }
 
@@ -192,36 +200,41 @@ class SK_Plugins_Last_Updated_Column {
             ?><span><?php echo $lastUpgradedOutput; ?></span><?php
 
 
-
         }
 
     }
 
-    function getPluginsLastUpdated($pluginSlug) {
+    function getPluginsLastUpdated ( $pluginSlug )
+    {
 
 
-        if( ! get_transient( 'sk_plugins_last_updated' . $pluginSlug ) ) {
+        if ( ! get_transient ( $this->slugUpdated . $pluginSlug ) ) {
 
-            include_once( ABSPATH . 'wp-admin/includes/plugin-install.php' );
+            include_once ( ABSPATH . 'wp-admin/includes/plugin-install.php' );
 
-            $call_api = plugins_api( 'plugin_information', array( 'slug' => $pluginSlug, 'fields' => array('last_updated') ) );
+            $call_api = plugins_api ( 'plugin_information',
+                    array ( 'slug' => $pluginSlug, 'fields' => array ( 'last_updated' ) ) );
 
             /** Check for Errors & Display the results */
-            if ( is_wp_error( $call_api ) ) {
+            if ( is_wp_error ( $call_api ) ) {
 
-                set_transient('sk_plugins_last_updated' . $pluginSlug, -1, 86400);
+                set_transient ( $this->slugUpdated . $pluginSlug, -1, $this->cacheTime );
+
                 return -1;
 
             } else {
 
                 if ( ! empty( $call_api->last_updated ) ) {
 
-                    set_transient( 'sk_plugins_last_updated' . $pluginSlug, $call_api->last_updated, 86400 );
+                    set_transient ( $this->slugUpdated . $pluginSlug, $call_api->last_updated,
+                            $this->cacheTime );
+
                     return $call_api->last_updated;
 
                 } else {
 
-                    set_transient( 'sk_plugins_last_updated' . $pluginSlug, -1, 86400 );
+                    set_transient ( $this->slugUpdated . $pluginSlug, -1, $this->cacheTime );
+
                     return -1;
 
                 }
@@ -234,43 +247,50 @@ class SK_Plugins_Last_Updated_Column {
             //delete_transient( 'sk_plugins_last_updated' . $pluginSlug );
 
 
-            return get_transient( 'sk_plugins_last_updated' . $pluginSlug );
+            return get_transient ( $this->slugUpdated . $pluginSlug );
 
         }
     }
 
-    function columnHeading( $columns ) {
+    function columnHeading ( $columns )
+    {
 
-        $columns['sk_plugin_last_updated'] = '<span>Last Updated</span>';
-        $columns['sk_plugin_last_upgraded'] = '<span>Last Upgraded</span>';
+        $columns[ $this->slugUpdated ]  = '<span>Last Updated</span>';
+        $columns[ $this->slugUpgraded ] = '<span>Last Upgraded</span>';
+
         return $columns;
 
     }
 
-    function css() {
+    function css ()
+    {
+
         ?>
         <style type="text/css">
-            @media screen and (max-width:782px) {
-                #the-list .column-sk_plugin_last_updated,
-                #the-list .column-sk_plugin_last_upgraded {
+            @media screen and (max-width: 782px) {
+                #the-list .column-<?= $this->slugUpdated; ?>,
+                #the-list .column-<?= $this->slugUpgraded; ?> {
                     display: block;
                     width: auto;
                 }
+
                 #the-list span.lastUpdatedMobileTitle,
                 #the-list span.lastUpgradedMobileTitle {
                     display: inline;
                 }
-                tfoot .column-sk_plugin_last_updated,
-                tfoot .column-sk_plugin_last_upgraded {
+
+                tfoot .column-<?= $this->slugUpdated; ?>,
+                tfoot .column-<?= $this->slugUpgraded; ?> {
                     display: none;
                 }
             }
-            .column-sk_plugin_last_updated span {
+
+            .column-<?= $this->slugUpdated; ?> span {
                 white-space: nowrap;
             }
+
             .lastUpdatedMobileTitle,
-            .lastUpgradedMobileTitle
-            {
+            .lastUpgradedMobileTitle {
                 display: none;
             }
         </style>
