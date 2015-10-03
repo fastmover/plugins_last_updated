@@ -30,6 +30,7 @@ class SK_Plugins_Last_Updated_Column
         add_action ( 'admin_menu', array ( $this, 'menu' ) );
 
         add_action( 'admin_notices', array( $this, 'notices' ) );
+        add_action( 'admin_enqueue_scripts', array( $this, 'js' ) );
 
         $this->firstColumnHeading = true;
 
@@ -44,6 +45,7 @@ class SK_Plugins_Last_Updated_Column
 
 //        https://github.com/symphonycms/symphony-2/commit/c8b0ee87ce0f72cad2ac5ba1c88ddd7c258bfc62
 
+        /*
 
         $phpVersion = phpversion();
         ?>
@@ -57,6 +59,8 @@ class SK_Plugins_Last_Updated_Column
         5.6.1 <?= ( $phpVersion > "5.6.1" ); ?><br />
         <?php
 
+        // */
+
 
     }
 
@@ -65,158 +69,171 @@ class SK_Plugins_Last_Updated_Column
 
         if ( $this->slugUpdated == $columnName ) {
 
-            $color = "";
-            $msg   = "";
-
-            $pluginDirectory = explode ( '/', $pluginFile );
-            $lastUpdated     = $this->getPluginsLastUpdated ( $pluginDirectory[ 0 ] );
-
-            ?>
-            <span class="lastUpdatedMobileTitle">Last Updated: </span><?php
-
-            if ( $lastUpdated !== "-1" && $lastUpdated !== -1 ) {
-
-                if ( ! isset( $this->currentDateTime ) ) {
-
-                    $this->currentDateTime = new DateTime();
-
-                }
-
-                $stringTime          = strtotime ( $lastUpdated );
-                $dateLastUpdated     = Date ( 'Y-m-d', $stringTime );
-                $lastUpdatedDateTime = new DateTime( $dateLastUpdated );
-
-                $dayDiff   = $this->currentDateTime->diff ( $lastUpdatedDateTime, true )->d;
-                $monthDiff = $this->currentDateTime->diff ( $lastUpdatedDateTime, true )->m;
-                $yearDiff  = $this->currentDateTime->diff ( $lastUpdatedDateTime, true )->y;
-
-
-                $warningLevel = 1;
-
-
-                if ( $yearDiff === 0 ) {
-                    if ( $monthDiff > 6 ) {
-                        $warningLevel = 2;
-                    }
-                } else {
-                    $msg .= $yearDiff . " Years ";
-                    if ( $yearDiff < 2 ) {
-                        $warningLevel = 3;
-                        if ( $yearDiff < 1 ) {
-                            $warningLevel = 2;
-                        }
-                    } else {
-                        $warningLevel = 4;
-                    }
-                }
-
-                if ( $monthDiff !== 0 ) {
-                    $msg .= $monthDiff . " Mon. ";
-                }
-
-                if ( $dayDiff !== 0 ) {
-                    $msg .= $dayDiff . " Days";
-                }
-
-                switch ( $warningLevel ) {
-
-                    case 1:
-                        // Green
-                        $color = "#00ff00";
-                        break;
-                    case 2:
-                        // Yellow
-                        $color = "#F2FF00";
-                        break;
-                    case 3:
-                        // Orange
-                        $color = "#FFA600";
-                        break;
-                    case 4:
-                        // Red
-                        $color = "#ff0000";
-                        break;
-
-                }
-
-
-                ?>
-                <span><?php echo $dateLastUpdated; ?></span>
-
-                <?php
-
-            } else {
-                ?>
-                <span>Not Available</span><?php
-            }
-
-            ?>
-            <br/>
-            <span style="background-color: <?php echo $color; ?>"><?php echo $msg; ?></span>
-            <?php
+            $this->columnLastUpdated( $columnName, $pluginFile, $pluginData );
 
 
         } elseif ( $this->slugUpgraded == $columnName ) {
 
-            ?><span class="lastUpgradedMobileTitle">Last Upgraded: </span><?php
-
-
-            $version = $pluginData[ 'Version' ];
-
-            if ( isset( $pluginData[ 'slug' ] ) ) {
-
-                $slug = $pluginData[ 'slug' ];
-
-            } else {
-
-                $slug = sanitize_title ( $pluginFile );
-
-            }
-
-            $lastUpgradedOutput = "";
-
-            $lastUpgradedSlug = 'plugin_last_upgraded_version_' . $slug;
-            $lastUpgradedDate = 'plugin_last_upgraded_date_' . $slug;
-            $lastVersion      = get_option ( $lastUpgradedSlug, false );
-            $lastDate         = get_option ( $lastUpgradedDate, false );
-
-            if ( $lastDate === false ) {
-
-                add_option ( $lastUpgradedDate, "Not Available" );
-                $lastUpgradedOutput = "Not Available";
-
-            } else {
-
-                $lastUpgradedOutput = $lastDate;
-
-            }
-
-            if ( ! $lastVersion or $lastVersion !== $version ) {
-
-                if ( $lastVersion === false ) {
-
-                    add_option ( $lastUpgradedSlug, $version );
-
-                } else {
-
-                    update_option ( $lastUpgradedSlug, $version );
-
-                }
-
-                if ( $lastDate !== false ) {
-
-                    $lastUpgradedOutput = Date ( 'Y-m-d' );
-                    update_option ( $lastUpgradedDate, $lastUpgradedOutput );
-
-                }
-
-            }
-
-
-            ?><span><?php echo $lastUpgradedOutput; ?></span><?php
-
+            $this->columnLastUpgraded( $columnName, $pluginFile, $pluginData );
 
         }
+
+    }
+
+    public function columnLastUpdated( $columnName, $pluginFile, $pluginData )
+    {
+
+        $color = "";
+        $msg   = "";
+
+        $pluginDirectory = explode ( '/', $pluginFile );
+        $lastUpdated     = $this->getPluginsLastUpdated ( $pluginDirectory[ 0 ] );
+
+        ?>
+        <span class="lastUpdatedMobileTitle">Last Updated: </span><?php
+
+        if ( $lastUpdated !== "-1" && $lastUpdated !== -1 ) {
+
+            if ( ! isset( $this->currentDateTime ) ) {
+
+                $this->currentDateTime = new DateTime();
+
+            }
+
+            $stringTime          = strtotime ( $lastUpdated );
+            $dateLastUpdated     = Date ( 'Y-m-d', $stringTime );
+            $lastUpdatedDateTime = new DateTime( $dateLastUpdated );
+
+            $dayDiff   = $this->currentDateTime->diff ( $lastUpdatedDateTime, true )->d;
+            $monthDiff = $this->currentDateTime->diff ( $lastUpdatedDateTime, true )->m;
+            $yearDiff  = $this->currentDateTime->diff ( $lastUpdatedDateTime, true )->y;
+
+
+            $warningLevel = 1;
+
+
+            if ( $yearDiff === 0 ) {
+                if ( $monthDiff > 6 ) {
+                    $warningLevel = 2;
+                }
+            } else {
+                $msg .= $yearDiff . " Years ";
+                if ( $yearDiff < 2 ) {
+                    $warningLevel = 3;
+                    if ( $yearDiff < 1 ) {
+                        $warningLevel = 2;
+                    }
+                } else {
+                    $warningLevel = 4;
+                }
+            }
+
+            if ( $monthDiff !== 0 ) {
+                $msg .= $monthDiff . " Mon. ";
+            }
+
+            if ( $dayDiff !== 0 ) {
+                $msg .= $dayDiff . " Days";
+            }
+
+            switch ( $warningLevel ) {
+
+                case 1:
+                    // Green
+                    $color = "#00ff00";
+                    break;
+                case 2:
+                    // Yellow
+                    $color = "#F2FF00";
+                    break;
+                case 3:
+                    // Orange
+                    $color = "#FFA600";
+                    break;
+                case 4:
+                    // Red
+                    $color = "#ff0000";
+                    break;
+
+            }
+
+
+            ?>
+            <span><?php echo $dateLastUpdated; ?></span>
+
+            <?php
+
+        } else {
+            ?>
+            <span>Not Available</span><?php
+        }
+
+        ?>
+        <br/>
+        <span class="plugin-last-updated-humanreadable" data-color="<?php echo $color; ?>" style="background-color: <?php echo $color; ?>"><?php echo $msg; ?></span>
+        <?php
+
+    }
+    public function columnLastUpgraded( $columnName, $pluginFile, $pluginData )
+    {
+
+        ?><span class="lastUpgradedMobileTitle">Last Upgraded: </span><?php
+
+
+        $version = $pluginData[ 'Version' ];
+
+        if ( isset( $pluginData[ 'slug' ] ) ) {
+
+            $slug = $pluginData[ 'slug' ];
+
+        } else {
+
+            $slug = sanitize_title ( $pluginFile );
+
+        }
+
+        $lastUpgradedOutput = "";
+
+        $lastUpgradedSlug = 'plugin_last_upgraded_version_' . $slug;
+        $lastUpgradedDate = 'plugin_last_upgraded_date_' . $slug;
+        $lastVersion      = get_option ( $lastUpgradedSlug, false );
+        $lastDate         = get_option ( $lastUpgradedDate, false );
+
+        if ( $lastDate === false ) {
+
+            add_option ( $lastUpgradedDate, "Not Available" );
+            $lastUpgradedOutput = "Not Available";
+
+        } else {
+
+            $lastUpgradedOutput = $lastDate;
+
+        }
+
+        if ( ! $lastVersion or $lastVersion !== $version ) {
+
+            if ( $lastVersion === false ) {
+
+                add_option ( $lastUpgradedSlug, $version );
+
+            } else {
+
+                update_option ( $lastUpgradedSlug, $version );
+
+            }
+
+            if ( $lastDate !== false ) {
+
+                $lastUpgradedOutput = Date ( 'Y-m-d' );
+                update_option ( $lastUpgradedDate, $lastUpgradedOutput );
+
+            }
+
+        }
+
+
+        ?><span><?php echo $lastUpgradedOutput; ?></span><?php
+
 
     }
 
@@ -313,6 +330,26 @@ class SK_Plugins_Last_Updated_Column
         <?php
     }
 
+    public function js( $hook = false )
+    {
+
+        if ( 'plugins.php' != $hook ) {
+            return;
+        }
+
+//        var_dump( plugin_dir_url( __FILE__ ) . 'plugins-last-updated.js' ); die;
+
+        wp_enqueue_script(
+                'plugins-last-updated-js',
+                plugin_dir_url( __FILE__ ) . 'plugins-last-updated.js',
+                array( 'jquery' ),
+                '1.0',
+                true
+        );
+
+
+    }
+
     public function menu()
     {
 
@@ -351,7 +388,9 @@ class SK_Plugins_Last_Updated_Column
         ?>
             <div class="wrap">
                 <h1>Clear Plugin Cache</h1>
-                <a href="<?= $url; ?>&clear-cache=true">Clear Update Cache</a>
+                <p>
+                    <a href="<?= $url; ?>&clear-cache=true">Clear Update Cache</a>
+                </p>
             </div>
 <?php
 

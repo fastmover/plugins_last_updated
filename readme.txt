@@ -29,7 +29,8 @@ This plugin adds a column to the plugin's page in Wordpress's admin to show when
 = 0.0.6 =
 * Changed caching from 24 hours to 30 minutes.
 * Added a cache clearing option in Admin Menu > Plugins > Plugin Columns
-*
+* Fixed screen options not hiding columns or saving
+* Added background color to whole column instaed of just text
 
 = 0.0.5 =
 * New column to show when the plugin was last upgraded - shows not available until each plugin is upgraded at least once.

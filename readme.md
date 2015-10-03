@@ -8,8 +8,10 @@ The functionality of this plugin was entirely [Karissa Skirmont](http://kissaskr
 
 ---
 
-Changelog
+Changelot
 =
 * 0.0.6
   * Changed caching from 24 hours to 30 minutes
   * Added a clear cache option in settings page: Admin > Plugins > Plugin Columns
+  * Fixed screen options not hiding columns or saving
+  * Added background color to whole column instaed of just text
