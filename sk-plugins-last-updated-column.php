@@ -17,10 +17,9 @@ class SK_Plugins_Last_Updated_Column
 {
 
     public $cacheTime    = 1800;
-
     public $slugUpdated  = "sk-plugin-last-updated";
-
     public $slugUpgraded = "sk-plugin-last-upgraded";
+    public $slugSettings = "plugins-last-updated-settings";
 
     function __construct ()
     {
@@ -28,6 +27,9 @@ class SK_Plugins_Last_Updated_Column
         add_filter ( 'manage_plugins_columns', array ( $this, 'columnHeading' ) );
         add_action ( 'manage_plugins_custom_column', array ( $this, 'columnData' ), 10, 3 );
         add_action ( 'admin_head', array ( $this, 'css' ) );
+        add_action ( 'admin_menu', array ( $this, 'menu' ) );
+
+        add_action( 'admin_notices', array( $this, 'notices' ) );
 
         $this->firstColumnHeading = true;
 
@@ -125,7 +127,7 @@ class SK_Plugins_Last_Updated_Column
 
 
                 ?>
-                <span><?php echo $lastUpdated; ?></span>
+                <span><?php echo $dateLastUpdated; ?></span>
 
                 <?php
 
@@ -295,6 +297,51 @@ class SK_Plugins_Last_Updated_Column
             }
         </style>
         <?php
+    }
+
+    public function menu()
+    {
+
+        add_submenu_page( 'plugins.php', 'Plugins Columns', 'Plugins Columns', 'manage_options', $this->slugSettings, array( $this, 'settings' ) );
+
+    }
+
+    public function notices()
+    {
+
+        $screen = get_current_screen();
+
+        if( isset( $screen ) and $screen->base === ( "plugins_page_" . $this->slugSettings ) and $_REQUEST[ 'clear-cache' ] == "true" ):
+
+            global $wpdb;
+
+            $wpdb->query( "DELETE FROM `$wpdb->options` WHERE `option_name` LIKE ('_" . $this->slugUpdated . "_%')" );
+
+            ?>
+            <div class="updated">
+                <p>
+                    Cache Cleared
+                </p>
+            </div>
+            <?php
+
+        endif;
+
+    }
+
+    public function settings()
+    {
+
+        $url = ( is_ssl() ? 'https://' : 'http://' ) . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"];
+
+        ?>
+            <div class="wrap">
+                <h1>Clear Plugin Cache</h1>
+                <a href="<?= $url; ?>&clear-cache=true">Clear Update Cache</a>
+            </div>
+<?php
+
+
     }
 
 }
