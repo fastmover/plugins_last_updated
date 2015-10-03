@@ -44,6 +44,20 @@ class SK_Plugins_Last_Updated_Column
 
 //        https://github.com/symphonycms/symphony-2/commit/c8b0ee87ce0f72cad2ac5ba1c88ddd7c258bfc62
 
+
+        $phpVersion = phpversion();
+        ?>
+        <?php var_dump( $phpVersion ); ?><br />
+        5.2.1 <?= ( $phpVersion > "5.2.1" ); ?><br />
+        5.5.1 <?= ( $phpVersion > "5.5.1" ); ?><br />
+        5.5.2 <?= ( $phpVersion > "5.5.2" ); ?><br />
+        5.5.21 <?= ( $phpVersion > "5.5.21" ); ?><br />
+        5.5.26 <?= ( $phpVersion > "5.5.26" ); ?><br />
+        5.5.27 <?= ( $phpVersion === "5.5.27" ); ?><br />
+        5.6.1 <?= ( $phpVersion > "5.6.1" ); ?><br />
+        <?php
+
+
     }
 
     function columnData ( $columnName, $pluginFile, $pluginData )
@@ -302,7 +316,7 @@ class SK_Plugins_Last_Updated_Column
     public function menu()
     {
 
-        add_submenu_page( 'plugins.php', 'Plugins Columns', 'Plugins Columns', 'manage_options', $this->slugSettings, array( $this, 'settings' ) );
+        add_submenu_page( 'plugins.php', 'Plugins Columns', 'Plugin Columns', 'manage_options', $this->slugSettings, array( $this, 'settings' ) );
 
     }
 

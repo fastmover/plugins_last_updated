@@ -3,7 +3,7 @@ Contributors: Fastmover
 Tags: plugins, plugins last updated, last updated, updated
 Requires at least: 3.7
 Tested up to: 4.0.1
-Stable tag: 0.0.5
+Stable tag: 0.0.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -28,7 +28,8 @@ This plugin adds a column to the plugin's page in Wordpress's admin to show when
 
 = 0.0.6 =
 * Changed caching from 24 hours to 30 minutes.
-* 
+* Added a cache clearing option in Admin Menu > Plugins > Plugin Columns
+*
 
 = 0.0.5 =
 * New column to show when the plugin was last upgraded - shows not available until each plugin is upgraded at least once.
