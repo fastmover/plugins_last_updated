@@ -315,12 +315,12 @@ class SK_Plugins_Last_Updated_Column
 
             global $wpdb;
 
-            $wpdb->query( "DELETE FROM `$wpdb->options` WHERE `option_name` LIKE ('_" . $this->slugUpdated . "_%')" );
+            $wpdb->query( "DELETE FROM `" . $wpdb->options . "` WHERE `option_name` LIKE ('%" . $this->slugUpdated . "%')" );
 
             ?>
             <div class="updated">
                 <p>
-                    Cache Cleared
+                    Cache Cleared.
                 </p>
             </div>
             <?php
