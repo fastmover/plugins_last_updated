@@ -8,7 +8,7 @@ The functionality of this plugin was entirely [Karissa Skirmont](http://kissaskr
 
 ---
 
-Changelot
+Changelog
 =
 * 0.0.6
   * Changed caching from 24 hours to 30 minutes
