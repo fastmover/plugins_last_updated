@@ -36,31 +36,36 @@ class SK_Plugins_Last_Updated_Column
 
     }
 
-    function timeDiff ( $start, $end )
+    public function color( $level )
     {
 
-//        To Add php 5.2 support or not?
+        switch ( $level ) {
 
-//        http://stackoverflow.com/questions/4033224/what-can-use-for-datetimediff-for-php-5-2
+            case 1:
+                // Green
+                $color = "#00ff00";
+                break;
+            case 2:
+                // Yellow
+                $color = "#F2FF00";
+                break;
+            case 3:
+                // Orange
+                $color = "#FFA600";
+                break;
+            case 4:
+                // Red
+                $color = "#ff0000";
+                break;
 
-//        https://github.com/symphonycms/symphony-2/commit/c8b0ee87ce0f72cad2ac5ba1c88ddd7c258bfc62
+            default:
+                // White
+                $color = "#ffffff";
+                break;
 
-        /*
+        }
 
-        $phpVersion = phpversion();
-        ?>
-        <?php var_dump( $phpVersion ); ?><br />
-        5.2.1 <?= ( $phpVersion > "5.2.1" ); ?><br />
-        5.5.1 <?= ( $phpVersion > "5.5.1" ); ?><br />
-        5.5.2 <?= ( $phpVersion > "5.5.2" ); ?><br />
-        5.5.21 <?= ( $phpVersion > "5.5.21" ); ?><br />
-        5.5.26 <?= ( $phpVersion > "5.5.26" ); ?><br />
-        5.5.27 <?= ( $phpVersion === "5.5.27" ); ?><br />
-        5.6.1 <?= ( $phpVersion > "5.6.1" ); ?><br />
-        <?php
-
-        // */
-
+        return $color;
 
     }
 
@@ -90,7 +95,8 @@ class SK_Plugins_Last_Updated_Column
         $lastUpdated     = $this->getPluginsLastUpdated ( $pluginDirectory[ 0 ] );
 
         ?>
-        <span class="lastUpdatedMobileTitle">Last Updated: </span><?php
+        <span class="lastUpdatedMobileTitle">Last Updated: </span>
+        <?php
 
         if ( $lastUpdated !== "-1" && $lastUpdated !== -1 ) {
 
@@ -104,7 +110,10 @@ class SK_Plugins_Last_Updated_Column
             $dateLastUpdated     = Date ( 'Y-m-d', $stringTime );
             $lastUpdatedDateTime = new DateTime( $dateLastUpdated );
 
-            $dayDiff   = $this->currentDateTime->diff ( $lastUpdatedDateTime, true )->d;
+//            $dayDiff   = $this->currentDateTime->diff ( $lastUpdatedDateTime, true )->d;
+
+            $dayDiff = round(($this->currentDateTime->format('U') - $lastUpdatedDateTime->format('U')) / (60*60*24));
+
             $monthDiff = $this->currentDateTime->diff ( $lastUpdatedDateTime, true )->m;
             $yearDiff  = $this->currentDateTime->diff ( $lastUpdatedDateTime, true )->y;
 
@@ -136,27 +145,7 @@ class SK_Plugins_Last_Updated_Column
                 $msg .= $dayDiff . " Days";
             }
 
-            switch ( $warningLevel ) {
-
-                case 1:
-                    // Green
-                    $color = "#00ff00";
-                    break;
-                case 2:
-                    // Yellow
-                    $color = "#F2FF00";
-                    break;
-                case 3:
-                    // Orange
-                    $color = "#FFA600";
-                    break;
-                case 4:
-                    // Red
-                    $color = "#ff0000";
-                    break;
-
-            }
-
+            $color = $this->color( $warningLevel );
 
             ?>
             <span><?php echo $dateLastUpdated; ?></span>
@@ -174,6 +163,7 @@ class SK_Plugins_Last_Updated_Column
         <?php
 
     }
+
     public function columnLastUpgraded( $columnName, $pluginFile, $pluginData )
     {
 
@@ -245,8 +235,13 @@ class SK_Plugins_Last_Updated_Column
 
             include_once ( ABSPATH . 'wp-admin/includes/plugin-install.php' );
 
-            $call_api = plugins_api ( 'plugin_information',
-                    array ( 'slug' => $pluginSlug, 'fields' => array ( 'last_updated' ) ) );
+            $call_api = @plugins_api (
+                    'plugin_information',
+                    array (
+                            'slug' => $pluginSlug,
+                            'fields' => array ( 'last_updated' )
+                    )
+            );
 
             /** Check for Errors & Display the results */
             if ( is_wp_error ( $call_api ) ) {
@@ -396,6 +391,35 @@ class SK_Plugins_Last_Updated_Column
 
 
     }
+
+    function timeDiff ( $start, $end )
+    {
+
+//        To Add php 5.2 support or not?
+
+//        http://stackoverflow.com/questions/4033224/what-can-use-for-datetimediff-for-php-5-2
+
+//        https://github.com/symphonycms/symphony-2/commit/c8b0ee87ce0f72cad2ac5ba1c88ddd7c258bfc62
+
+        /*
+
+        $phpVersion = phpversion();
+        ?>
+        <?php var_dump( $phpVersion ); ?><br />
+        5.2.1 <?= ( $phpVersion > "5.2.1" ); ?><br />
+        5.5.1 <?= ( $phpVersion > "5.5.1" ); ?><br />
+        5.5.2 <?= ( $phpVersion > "5.5.2" ); ?><br />
+        5.5.21 <?= ( $phpVersion > "5.5.21" ); ?><br />
+        5.5.26 <?= ( $phpVersion > "5.5.26" ); ?><br />
+        5.5.27 <?= ( $phpVersion === "5.5.27" ); ?><br />
+        5.6.1 <?= ( $phpVersion > "5.6.1" ); ?><br />
+        <?php
+
+        // */
+
+
+    }
+
 
 }
 
