@@ -10,6 +10,8 @@ The functionality of this plugin was entirely [Karissa Skirmont](http://kissaskr
 
 Changelot
 =
+* 0.0.7
+  * Added support for Multisite
 * 0.0.6
   * PHP 5.2 Compliance - Calculated months may be just a bit off if you're running PHP 5.2
   * Changed caching from 24 hours to 30 minutes

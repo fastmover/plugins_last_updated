@@ -3,7 +3,7 @@
  * Plugin Name: Plugins Last Updated Column
  * Plugin URI: http://stevenkohlmeyer.com/plugins-last-updated-column/
  * Description: This plugin adds a 'Last Updated' column to the admin plugins page.
- * Version: 0.0.6
+ * Version: 0.0.7
  * Author: Fastmover
  * Author URI: http://StevenKohlmeyer.com
  * License: GPLv2 or later
@@ -28,6 +28,7 @@ class SK_Plugins_Last_Updated_Column
     {
 
         add_filter ( 'manage_plugins_columns', array ( $this, 'columnHeading' ) );
+        add_filter ( 'manage_plugins-network_columns', array ( $this, 'columnHeading' ) );
         add_action ( 'manage_plugins_custom_column', array ( $this, 'columnData' ), 10, 3 );
         add_action ( 'admin_head', array ( $this, 'css' ) );
         add_action ( 'admin_menu', array ( $this, 'menu' ) );

@@ -3,7 +3,7 @@ Contributors: Fastmover
 Tags: plugins, plugins last updated, last updated, updated
 Requires at least: 3.7
 Tested up to: 4.0.1
-Stable tag: 0.0.6
+Stable tag: 0.0.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -26,6 +26,8 @@ This plugin adds a column to the plugin's page in WordPress's admin to show when
 
 == Changelog ==
 
+= 0.0.7 =
+* Added support for multisite
 = 0.0.6 =
 * PHP 5.2 Compliance - Calculated months may be just a bit off if you're running PHP 5.2
 * Changed caching from 24 hours to 30 minutes.
