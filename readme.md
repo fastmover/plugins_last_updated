@@ -11,7 +11,8 @@ The functionality of this plugin was entirely [Karissa Skirmont](http://kissaskr
 Changelot
 =
 * 0.0.6
+  * PHP 5.2 Compliance - Calculated months may be just a bit off if you're running PHP 5.2
   * Changed caching from 24 hours to 30 minutes
   * Added a clear cache option in settings page: Admin > Plugins > Plugin Columns
   * Fixed screen options not hiding columns or saving
-  * Added background color to whole column instaed of just text
+  * Fixed errors outputting if WordPress's API cannot be reached.

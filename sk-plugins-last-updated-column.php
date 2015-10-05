@@ -17,8 +17,11 @@ class SK_Plugins_Last_Updated_Column
 {
 
     public $cacheTime    = 1800;
+
     public $slugUpdated  = "sk-plugin-last-updated ";
+
     public $slugUpgraded = "sk-plugin-last-upgraded ";
+
     public $slugSettings = "plugins-last-updated-settings";
 
     function __construct ()
@@ -29,14 +32,14 @@ class SK_Plugins_Last_Updated_Column
         add_action ( 'admin_head', array ( $this, 'css' ) );
         add_action ( 'admin_menu', array ( $this, 'menu' ) );
 
-        add_action( 'admin_notices', array( $this, 'notices' ) );
-        add_action( 'admin_enqueue_scripts', array( $this, 'js' ) );
+        add_action ( 'admin_notices', array ( $this, 'notices' ) );
+        add_action ( 'admin_enqueue_scripts', array ( $this, 'js' ) );
 
         $this->firstColumnHeading = true;
 
     }
 
-    public function color( $level )
+    public function color ( $level )
     {
 
         switch ( $level ) {
@@ -74,18 +77,18 @@ class SK_Plugins_Last_Updated_Column
 
         if ( $this->slugUpdated == $columnName ) {
 
-            $this->columnLastUpdated( $columnName, $pluginFile, $pluginData );
+            $this->columnLastUpdated ( $columnName, $pluginFile, $pluginData );
 
 
         } elseif ( $this->slugUpgraded == $columnName ) {
 
-            $this->columnLastUpgraded( $columnName, $pluginFile, $pluginData );
+            $this->columnLastUpgraded ( $columnName, $pluginFile, $pluginData );
 
         }
 
     }
 
-    public function columnLastUpdated( $columnName, $pluginFile, $pluginData )
+    public function columnLastUpdated ( $columnName, $pluginFile, $pluginData )
     {
 
         $color = "";
@@ -110,42 +113,28 @@ class SK_Plugins_Last_Updated_Column
             $dateLastUpdated     = Date ( 'Y-m-d', $stringTime );
             $lastUpdatedDateTime = new DateTime( $dateLastUpdated );
 
-//            $dayDiff   = $this->currentDateTime->diff ( $lastUpdatedDateTime, true )->d;
+            if ( phpversion () < "5.3" ) {
 
-            $dayDiff = round(($this->currentDateTime->format('U') - $lastUpdatedDateTime->format('U')) / (60*60*24));
+                $dayDiff   = (int) ( ( $this->currentDateTime->format ( 'U' ) - $lastUpdatedDateTime->format ( 'U' ) ) / ( 60 * 60 * 24 ) );
+                $monthDiff = (int) ( ( $this->currentDateTime->format ( 'U' ) - $lastUpdatedDateTime->format ( 'U' ) ) / ( 60 * 60 * 24 * 30 ) );
+                $yearDiff  = (int) ( ( $this->currentDateTime->format ( 'U' ) - $lastUpdatedDateTime->format ( 'U' ) ) / ( 60 * 60 * 24 * 365 ) );
 
-            $monthDiff = $this->currentDateTime->diff ( $lastUpdatedDateTime, true )->m;
-            $yearDiff  = $this->currentDateTime->diff ( $lastUpdatedDateTime, true )->y;
+                $dayDiff   = $this->roundDown ( $dayDiff, 30 );
+                $monthDiff = $this->roundDown ( $monthDiff, 12 );
+                $yearDiff  = $this->roundDown ( $yearDiff, 365 );
 
-
-            $warningLevel = 1;
-
-
-            if ( $yearDiff === 0 ) {
-                if ( $monthDiff > 6 ) {
-                    $warningLevel = 2;
-                }
             } else {
-                $msg .= $yearDiff . " Years ";
-                if ( $yearDiff < 2 ) {
-                    $warningLevel = 3;
-                    if ( $yearDiff < 1 ) {
-                        $warningLevel = 2;
-                    }
-                } else {
-                    $warningLevel = 4;
-                }
+
+                $dayDiff   = $this->currentDateTime->diff ( $lastUpdatedDateTime, true )->d;
+                $monthDiff = $this->currentDateTime->diff ( $lastUpdatedDateTime, true )->m;
+                $yearDiff  = $this->currentDateTime->diff ( $lastUpdatedDateTime, true )->y;
+
             }
 
-            if ( $monthDiff !== 0 ) {
-                $msg .= $monthDiff . " Mon. ";
-            }
+            $warningLevel = $this->warningLevel( $yearDiff, $monthDiff, $dayDiff );
+            $msg .= $this->message( $yearDiff, $monthDiff, $dayDiff );
 
-            if ( $dayDiff !== 0 ) {
-                $msg .= $dayDiff . " Days";
-            }
-
-            $color = $this->color( $warningLevel );
+            $color = $this->color ( $warningLevel );
 
             ?>
             <span><?php echo $dateLastUpdated; ?></span>
@@ -154,17 +143,18 @@ class SK_Plugins_Last_Updated_Column
 
         } else {
             ?>
-            <span>Not Available</span><?php
+            <span>Not Avail.</span><?php
         }
 
         ?>
         <br/>
-        <span class="plugin-last-updated-humanreadable" data-color="<?php echo $color; ?>" style="background-color: <?php echo $color; ?>"><?php echo $msg; ?></span>
+        <span class="plugin-last-updated-humanreadable" data-color="<?php echo $color; ?>"
+              style="background-color: <?php echo $color; ?>"><?php echo $msg; ?></span>
         <?php
 
     }
 
-    public function columnLastUpgraded( $columnName, $pluginFile, $pluginData )
+    public function columnLastUpgraded ( $columnName, $pluginFile, $pluginData )
     {
 
         ?><span class="lastUpgradedMobileTitle">Last Upgraded: </span><?php
@@ -191,8 +181,8 @@ class SK_Plugins_Last_Updated_Column
 
         if ( $lastDate === false ) {
 
-            add_option ( $lastUpgradedDate, "Not Available" );
-            $lastUpgradedOutput = "Not Available";
+            add_option ( $lastUpgradedDate, "Not Avail." );
+            $lastUpgradedOutput = "Not Avail.";
 
         } else {
 
@@ -238,7 +228,7 @@ class SK_Plugins_Last_Updated_Column
             $call_api = @plugins_api (
                     'plugin_information',
                     array (
-                            'slug' => $pluginSlug,
+                            'slug'   => $pluginSlug,
                             'fields' => array ( 'last_updated' )
                     )
             );
@@ -325,7 +315,7 @@ class SK_Plugins_Last_Updated_Column
         <?php
     }
 
-    public function js( $hook = false )
+    public function js ( $hook = false )
     {
 
         if ( 'plugins.php' != $hook ) {
@@ -334,10 +324,10 @@ class SK_Plugins_Last_Updated_Column
 
 //        var_dump( plugin_dir_url( __FILE__ ) . 'plugins-last-updated.js' ); die;
 
-        wp_enqueue_script(
+        wp_enqueue_script (
                 'plugins-last-updated-js',
-                plugin_dir_url( __FILE__ ) . 'plugins-last-updated.js',
-                array( 'jquery' ),
+                plugin_dir_url ( __FILE__ ) . 'plugins-last-updated.js',
+                array ( 'jquery' ),
                 '1.0',
                 true
         );
@@ -345,23 +335,70 @@ class SK_Plugins_Last_Updated_Column
 
     }
 
-    public function menu()
+    public function menu ()
     {
 
-        add_submenu_page( 'plugins.php', 'Plugins Columns', 'Plugin Columns', 'manage_options', $this->slugSettings, array( $this, 'settings' ) );
+        add_submenu_page ( 'plugins.php', 'Plugins Columns', 'Plugin Columns', 'manage_options', $this->slugSettings,
+                array ( $this, 'settings' ) );
 
     }
 
-    public function notices()
+    public function message( $yearDiff, $monthDiff, $dayDiff )
     {
 
-        $screen = get_current_screen();
+        $msg = "";
+        if ( $yearDiff !== 0 ) {
 
-        if( isset( $screen ) and $screen->base === ( "plugins_page_" . $this->slugSettings ) and $_REQUEST[ 'clear-cache' ] == "true" ):
+            $msg .= $yearDiff;
+
+            if( $yearDiff == 1 ) {
+
+                $msg .= " Year ";
+
+            } else {
+
+                $msg .= " Years ";
+
+            }
+
+        }
+
+        if ( $monthDiff !== 0 ) {
+
+            $msg .= $monthDiff . " Mon. ";
+
+        }
+
+        if ( $dayDiff !== 0 ) {
+
+            $msg .= $dayDiff;
+
+            if( $dayDiff == 1 ) {
+
+                $msg .= " Day";
+
+            } else {
+
+                $msg .= " Days";
+
+            }
+        }
+
+        return $msg;
+
+
+    }
+
+    public function notices ()
+    {
+
+        $screen = get_current_screen ();
+
+        if ( isset( $screen ) and $screen->base === ( "plugins_page_" . $this->slugSettings ) and $_REQUEST[ 'clear-cache' ] == "true" ):
 
             global $wpdb;
 
-            $wpdb->query( "DELETE FROM `" . $wpdb->options . "` WHERE `option_name` LIKE ('%" . $this->slugUpdated . "%')" );
+            $wpdb->query ( "DELETE FROM `" . $wpdb->options . "` WHERE `option_name` LIKE ('%" . $this->slugUpdated . "%')" );
 
             ?>
             <div class="updated">
@@ -375,19 +412,35 @@ class SK_Plugins_Last_Updated_Column
 
     }
 
-    public function settings()
+    public function roundDown ( $num, $max )
     {
 
-        $url = ( is_ssl() ? 'https://' : 'http://' ) . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"];
+        if( $num === 0 )
+            return $num;
+
+        $remainder = ( $num % $max );
+
+        if ( $remainder > 0 )
+            return $remainder;
+
+        return $num;
+
+    }
+
+    public function settings ()
+    {
+
+        $url = ( is_ssl () ? 'https://' : 'http://' ) . $_SERVER[ "HTTP_HOST" ] . $_SERVER[ "REQUEST_URI" ];
 
         ?>
-            <div class="wrap">
-                <h1>Clear Plugin Cache</h1>
-                <p>
-                    <a href="<?= $url; ?>&clear-cache=true">Clear Update Cache</a>
-                </p>
-            </div>
-<?php
+        <div class="wrap">
+            <h1>Clear Plugin Cache</h1>
+
+            <p>
+                <a href="<?= $url; ?>&clear-cache=true">Clear Update Cache</a>
+            </p>
+        </div>
+        <?php
 
 
     }
@@ -417,6 +470,32 @@ class SK_Plugins_Last_Updated_Column
 
         // */
 
+
+    }
+
+    function warningLevel( $yearDiff, $monthDiff, $dayDiff )
+    {
+
+        $warningLevel = 1;
+
+
+        if ( $yearDiff === 0 ) {
+            if ( $monthDiff > 6 ) {
+                $warningLevel = 2;
+            }
+        } else {
+            if ( $yearDiff < 2 ) {
+                $warningLevel = 3;
+                if ( $yearDiff < 1 ) {
+                    $warningLevel = 2;
+                }
+            } else {
+                $warningLevel = 4;
+            }
+
+        }
+
+        return $warningLevel;
 
     }
 
