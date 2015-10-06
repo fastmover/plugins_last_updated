@@ -1,3 +1,4 @@
+![GitHub Logo](/assets/banner-772x250.png)
 Plugins Last Updated Column
 =
 ---
