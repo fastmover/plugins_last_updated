@@ -2,7 +2,7 @@
 Contributors: Fastmover
 Tags: plugins, plugins last updated, last updated, updated
 Requires at least: 3.7
-Tested up to: 4.0.1
+Tested up to: 4.3.1
 Stable tag: 0.0.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -11,7 +11,7 @@ This plugin adds a column to the admin plugin's page to show when each plugin wa
 
 == Description ==
 
-This plugin adds a column to the plugin's page in WordPress's admin to show when each plugin was last updated. This causes the plugins page to load very slowly on the first page load due to many API calls made to wordPress.org in order to retrieve the last updated information.  This plugin makes 1 API call for each plugin installed.  This data is cached for 24 hours. The functionality of this plugin was entirely [Karissa Skirmont](http://kissaskreations.com/ "Kissa's Kreations")'s idea. [Plugin Page](http://stevenkohlmeyer.com/plugins-last-updated-column/ "Plugins Last Updated Column")
+This plugin adds a column to the plugin's page in WordPress's admin to show when each plugin was last updated. This causes the plugins page to load very slowly on the first page load due to many API calls made to wordPress.org in order to retrieve the last updated information.  This plugin makes 1 API call for each plugin installed.  This data is cached for 24 hours. The functionality of this plugin was entirely [Karissa Skirmont](http://kissaskreations.com/ "Kissa's Kreations")'s idea. [Plugin Page](http://stevenkohlmeyer.com/plugins-last-updated-column/ "Plugins Last Updated Column").  Artwork compliments of [Karissa](http://kissaskreations.com/ "Kissa's Kreations")
 
 == Installation ==
 
@@ -22,7 +22,8 @@ This plugin adds a column to the plugin's page in WordPress's admin to show when
 == Screenshots ==
 
 1. As you can see, the plugins table now has 2 columns on the right side labeled: Last Updated and Last Upgraded.
-2. A page dedicated to clearing cache on the Last Updated Column
+2. A page dedicated to clearing cache on the Last Updated Column.
+3. Shows a WordPress MultiSite Network Plugin page with last updated / last upgraded columns.
 
 == Changelog ==
 

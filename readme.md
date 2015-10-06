@@ -6,6 +6,8 @@ The functionality of this plugin was entirely [Karissa Skirmont](http://kissaskr
 
 [Plugin Page](http://stevenkohlmeyer.com/plugins-last-updated-column/ "Plugins Last Updated Column")
 
+Artwork compliments of [Karissa Skirmont](http://kissaskreations.com/ "Kissa's Kreations").
+
 ---
 
 Changelot
