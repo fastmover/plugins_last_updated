@@ -5,7 +5,9 @@ Plugins Last Updated Column
 This plugin adds a column to the admin plugin's page to show when each plugin was last updated.
 The functionality of this plugin was entirely [Karissa Skirmont](http://kissaskreations.com/ "Kissa's Kreations")'s idea.
 
-[Plugin Page](http://stevenkohlmeyer.com/plugins-last-updated-column/ "Plugins Last Updated Column")
+[Plugin Page](https://wordpress.org/plugins/plugins-last-updated-column/#developers "Plugins Last Updated Column")
+
+[Description Page](https://stevenkohlmeyer.com/plugins-last-updated-column/ "Plugins Last Updated Column")
 
 Artwork compliments of [Karissa Skirmont](http://kissaskreations.com/ "Kissa's Kreations").
 
@@ -13,6 +15,10 @@ Artwork compliments of [Karissa Skirmont](http://kissaskreations.com/ "Kissa's K
 
 Changelot
 =
+* 0.1.0
+  * Version number bump
+* 0.0.8
+  * Version number bump
 * 0.0.7
   * Added support for Multisite
 * 0.0.6

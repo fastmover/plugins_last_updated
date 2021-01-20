@@ -2,8 +2,8 @@
 Contributors: Fastmover
 Tags: plugins, plugins last updated, last updated, updated
 Requires at least: 3.7
-Tested up to: 4.3.1
-Stable tag: 0.0.7
+Tested up to: 5.6
+Stable tag: 0.1.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -27,14 +27,24 @@ This plugin adds a column to the plugin's page in WordPress's admin to show when
 
 == Changelog ==
 
+= 0.1.0 =
+* Version number bump - Plugin still works as expected with WordPress 5.6
+
+= 0.0.9 =
+* Version number bump - This plugin still works as expected with the new WordPress 5.2
+
+= 0.0.8 =
+* Version number bump
+
 = 0.0.7 =
 * Added support for multisite
+
 = 0.0.6 =
 * PHP 5.2 Compliance - Calculated months may be just a bit off if you're running PHP 5.2
 * Changed caching from 24 hours to 30 minutes.
 * Added a cache clearing option in Admin Menu > Plugins > Plugin Columns
 * Fixed screen options not hiding columns or saving
-* Added background color to whole column instaed of just text
+* Added background color to whole column instead of just text
 * Fixed errors outputting if WordPress's API cannot be reached
 
 = 0.0.5 =
