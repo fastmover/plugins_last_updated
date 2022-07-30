@@ -15,34 +15,26 @@ if ( ! defined ( 'ABSPATH' ) ) {
 
 class SK_Plugins_Last_Updated_Column
 {
-
     public $cacheTime    = 1800;
-
     public $slugUpdated  = "sk-plugin-last-updated ";
-
     public $slugUpgraded = "sk-plugin-last-upgraded ";
-
     public $slugSettings = "plugins-last-updated-settings";
 
     function __construct ()
     {
-
         add_filter ( 'manage_plugins_columns', array ( $this, 'columnHeading' ) );
         add_filter ( 'manage_plugins-network_columns', array ( $this, 'columnHeading' ) );
         add_action ( 'manage_plugins_custom_column', array ( $this, 'columnData' ), 10, 3 );
         add_action ( 'admin_head', array ( $this, 'css' ) );
         add_action ( 'admin_menu', array ( $this, 'menu' ) );
-
         add_action ( 'admin_notices', array ( $this, 'notices' ) );
         add_action ( 'admin_enqueue_scripts', array ( $this, 'js' ) );
 
         $this->firstColumnHeading = true;
-
     }
 
     public function color ( $level )
     {
-
         switch ( $level ) {
 
             case 1:
@@ -70,23 +62,15 @@ class SK_Plugins_Last_Updated_Column
         }
 
         return $color;
-
     }
 
     function columnData ( $columnName, $pluginFile, $pluginData )
     {
-
         if ( $this->slugUpdated == $columnName ) {
-
             $this->columnLastUpdated ( $columnName, $pluginFile, $pluginData );
-
-
         } elseif ( $this->slugUpgraded == $columnName ) {
-
             $this->columnLastUpgraded ( $columnName, $pluginFile, $pluginData );
-
         }
-
     }
 
     public function columnLastUpdated ( $columnName, $pluginFile, $pluginData )
@@ -105,9 +89,7 @@ class SK_Plugins_Last_Updated_Column
         if ( $lastUpdated !== "-1" && $lastUpdated !== -1 ) {
 
             if ( ! isset( $this->currentDateTime ) ) {
-
                 $this->currentDateTime = new DateTime();
-
             }
 
             $stringTime          = strtotime ( $lastUpdated );
@@ -144,7 +126,8 @@ class SK_Plugins_Last_Updated_Column
 
         } else {
             ?>
-            <span>Not Avail.</span><?php
+            <span>Not Avail.</span>
+            <?php
         }
 
         ?>
@@ -152,7 +135,6 @@ class SK_Plugins_Last_Updated_Column
         <span class="plugin-last-updated-humanreadable" data-color="<?php echo $color; ?>"
               style="background-color: <?php echo $color; ?>"><?php echo $msg; ?></span>
         <?php
-
     }
 
     public function columnLastUpgraded ( $columnName, $pluginFile, $pluginData )
@@ -160,61 +142,43 @@ class SK_Plugins_Last_Updated_Column
 
         ?><span class="lastUpgradedMobileTitle">Last Upgraded: </span><?php
 
-
         $version = $pluginData[ 'Version' ];
 
         if ( isset( $pluginData[ 'slug' ] ) ) {
-
             $slug = $pluginData[ 'slug' ];
-
         } else {
-
             $slug = sanitize_title ( $pluginFile );
-
         }
 
         $lastUpgradedOutput = "";
-
-        $lastUpgradedSlug = 'plugin_last_upgraded_version_' . $slug;
-        $lastUpgradedDate = 'plugin_last_upgraded_date_' . $slug;
-        $lastVersion      = get_option ( $lastUpgradedSlug, false );
-        $lastDate         = get_option ( $lastUpgradedDate, false );
+        $lastUpgradedSlug   = 'plugin_last_upgraded_version_' . $slug;
+        $lastUpgradedDate   = 'plugin_last_upgraded_date_' . $slug;
+        $lastVersion        = get_option ( $lastUpgradedSlug, false );
+        $lastDate           = get_option ( $lastUpgradedDate, false );
 
         if ( $lastDate === false ) {
-
             add_option ( $lastUpgradedDate, "Not Avail." );
             $lastUpgradedOutput = "Not Avail.";
-
         } else {
-
             $lastUpgradedOutput = $lastDate;
-
         }
 
         if ( ! $lastVersion or $lastVersion !== $version ) {
-
             if ( $lastVersion === false ) {
-
                 add_option ( $lastUpgradedSlug, $version );
-
             } else {
-
                 update_option ( $lastUpgradedSlug, $version );
-
             }
 
             if ( $lastDate !== false ) {
-
                 $lastUpgradedOutput = Date ( 'Y-m-d' );
                 update_option ( $lastUpgradedDate, $lastUpgradedOutput );
-
             }
-
         }
 
-
-        ?><span><?php echo $lastUpgradedOutput; ?></span><?php
-
+        ?>
+            <span><?php echo $lastUpgradedOutput; ?></span>
+        <?php
 
     }
 
@@ -236,54 +200,40 @@ class SK_Plugins_Last_Updated_Column
 
             /** Check for Errors & Display the results */
             if ( is_wp_error ( $call_api ) ) {
-
                 set_transient ( $this->slugUpdated . $pluginSlug, -1, $this->cacheTime );
 
                 return -1;
-
             } else {
-
                 if ( ! empty( $call_api->last_updated ) ) {
-
                     set_transient ( $this->slugUpdated . $pluginSlug, $call_api->last_updated,
                             $this->cacheTime );
 
                     return $call_api->last_updated;
-
                 } else {
-
                     set_transient ( $this->slugUpdated . $pluginSlug, -1, $this->cacheTime );
 
                     return -1;
-
                 }
-
             }
 
         } else {
-
             //Debugging purposes:
             //delete_transient( 'sk_plugins_last_updated' . $pluginSlug );
 
-
             return get_transient ( $this->slugUpdated . $pluginSlug );
-
         }
     }
 
     function columnHeading ( $columns )
     {
-
         $columns[ $this->slugUpdated ]  = '<span>Last Updated</span>';
         $columns[ $this->slugUpgraded ] = '<span>Last Upgraded</span>';
 
         return $columns;
-
     }
 
     function css ()
     {
-
         ?>
         <style type="text/css">
             @media screen and (max-width: 782px) {
@@ -318,12 +268,9 @@ class SK_Plugins_Last_Updated_Column
 
     public function js ( $hook = false )
     {
-
         if ( 'plugins.php' != $hook ) {
             return;
         }
-
-//        var_dump( plugin_dir_url( __FILE__ ) . 'plugins-last-updated.js' ); die;
 
         wp_enqueue_script (
                 'plugins-last-updated-js',
@@ -332,13 +279,10 @@ class SK_Plugins_Last_Updated_Column
                 '1.0',
                 true
         );
-
-
     }
 
     public function menu ()
     {
-
         add_submenu_page ( 'plugins.php', 'Plugins Columns', 'Plugin Columns', 'manage_options', $this->slugSettings,
                 array ( $this, 'settings' ) );
 
@@ -353,21 +297,15 @@ class SK_Plugins_Last_Updated_Column
             $msg .= $yearDiff;
 
             if( $yearDiff == 1 ) {
-
                 $msg .= " Year ";
-
             } else {
-
                 $msg .= " Years ";
-
             }
 
         }
 
         if ( $monthDiff !== 0 ) {
-
             $msg .= $monthDiff . " Mon. ";
-
         }
 
         if ( $dayDiff !== 0 ) {
@@ -375,13 +313,9 @@ class SK_Plugins_Last_Updated_Column
             $msg .= $dayDiff;
 
             if( $dayDiff == 1 ) {
-
                 $msg .= " Day";
-
             } else {
-
                 $msg .= " Days";
-
             }
         }
 
@@ -392,7 +326,6 @@ class SK_Plugins_Last_Updated_Column
 
     public function notices ()
     {
-
         $screen = get_current_screen ();
 
         if ( isset( $screen ) and $screen->base === ( "plugins_page_" . $this->slugSettings ) and $_REQUEST[ 'clear-cache' ] == "true" ):
@@ -415,17 +348,17 @@ class SK_Plugins_Last_Updated_Column
 
     public function roundDown ( $num, $max )
     {
-
-        if( $num === 0 )
+        if( $num === 0 ) {
             return $num;
+        }
 
         $remainder = ( $num % $max );
 
-        if ( $remainder > 0 )
+        if ( $remainder > 0 ) {
             return $remainder;
+        }
 
         return $num;
-
     }
 
     public function settings ()
@@ -446,39 +379,10 @@ class SK_Plugins_Last_Updated_Column
 
     }
 
-    function timeDiff ( $start, $end )
-    {
-
-//        To Add php 5.2 support or not?
-
-//        http://stackoverflow.com/questions/4033224/what-can-use-for-datetimediff-for-php-5-2
-
-//        https://github.com/symphonycms/symphony-2/commit/c8b0ee87ce0f72cad2ac5ba1c88ddd7c258bfc62
-
-        /*
-
-        $phpVersion = phpversion();
-        ?>
-        <?php var_dump( $phpVersion ); ?><br />
-        5.2.1 <?= ( $phpVersion > "5.2.1" ); ?><br />
-        5.5.1 <?= ( $phpVersion > "5.5.1" ); ?><br />
-        5.5.2 <?= ( $phpVersion > "5.5.2" ); ?><br />
-        5.5.21 <?= ( $phpVersion > "5.5.21" ); ?><br />
-        5.5.26 <?= ( $phpVersion > "5.5.26" ); ?><br />
-        5.5.27 <?= ( $phpVersion === "5.5.27" ); ?><br />
-        5.6.1 <?= ( $phpVersion > "5.6.1" ); ?><br />
-        <?php
-
-        // */
-
-
-    }
-
     function warningLevel( $yearDiff, $monthDiff, $dayDiff )
     {
 
         $warningLevel = 1;
-
 
         if ( $yearDiff === 0 ) {
             if ( $monthDiff > 6 ) {
@@ -493,16 +397,11 @@ class SK_Plugins_Last_Updated_Column
             } else {
                 $warningLevel = 4;
             }
-
         }
 
         return $warningLevel;
-
     }
-
 
 }
 
 $SK_Plugins_Last_Updated_Column = new SK_Plugins_Last_Updated_Column();
-
-?>
