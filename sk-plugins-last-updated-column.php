@@ -16,6 +16,7 @@ if ( ! defined ( 'ABSPATH' ) ) {
 class SK_Plugins_Last_Updated_Column
 {
     public $cacheTime    = 1800;
+    public $slugUpdate  = "sk-plugin-last-update ";
     public $slugUpdated  = "sk-plugin-last-updated ";
     public $slugUpgraded = "sk-plugin-last-upgraded ";
     public $slugSettings = "plugins-last-updated-settings";
@@ -66,10 +67,15 @@ class SK_Plugins_Last_Updated_Column
 
     function columnData ( $columnName, $pluginFile, $pluginData )
     {
-        if ( $this->slugUpdated == $columnName ) {
-            $this->columnLastUpdated ( $columnName, $pluginFile, $pluginData );
-        } elseif ( $this->slugUpgraded == $columnName ) {
-            $this->columnLastUpgraded ( $columnName, $pluginFile, $pluginData );
+        switch($columnName) {
+            case $this->slugUpdate:
+                break;
+            case $this->slugUpdated:
+                $this->columnLastUpdated ( $columnName, $pluginFile, $pluginData );
+                break;
+            case $this->slugUpgraded:
+                $this->columnLastUpgraded ( $columnName, $pluginFile, $pluginData );
+                break;
         }
     }
 
