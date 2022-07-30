@@ -2,12 +2,12 @@
 Contributors: Fastmover
 Tags: plugins, plugins last updated, last updated, updated
 Requires at least: 3.7
-Tested up to: 5.6
-Stable tag: 0.1.0
+Tested up to: 6.0.1
+Stable tag: 0.1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-This plugin adds a column to the admin plugin's page to show when each plugin was last updated.
+This plugin adds columns to the admin plugin's page to show when each plugin was last updated and upgraded.
 
 == Description ==
 
@@ -26,6 +26,9 @@ This plugin adds a column to the plugin's page in WordPress's admin to show when
 3. Shows a WordPress MultiSite Network Plugin page with last updated / last upgraded columns.
 
 == Changelog ==
+
+= 0.1.1 =
+* Version bump - Plugin still works as expected with Wordpress 6.0.1
 
 = 0.1.0 =
 * Version number bump - Plugin still works as expected with WordPress 5.6
