@@ -1,9 +1,9 @@
 === Plugin Name ===
-Contributors: Fastmover
+Contributors: Fastmover, karissa
 Tags: plugins, plugins last updated, last updated, updated
 Requires at least: 3.7
-Tested up to: 6.0.1
-Stable tag: 0.1.1
+Tested up to: 6.5.2
+Stable tag: 0.1.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -26,6 +26,9 @@ This plugin adds a column to the plugin's page in WordPress's admin to show when
 3. Shows a WordPress MultiSite Network Plugin page with last updated / last upgraded columns.
 
 == Changelog ==
+
+= 0.1.2 =
+* Version bump - Plugin still works as expected with Wordpress 6.5.2
 
 = 0.1.1 =
 * Version bump - Plugin still works as expected with Wordpress 6.0.1

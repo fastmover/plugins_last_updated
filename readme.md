@@ -1,4 +1,4 @@
-![GitHub Logo](/assets/banner-772x250.png)
+![Plugins Last Updated Column Banner](/assets/banner-772x250.png)
 Plugins Last Updated Column
 =
 ---
@@ -7,14 +7,18 @@ The functionality of this plugin was entirely [Karissa Skirmont](http://kissaskr
 
 [Plugin Page](https://wordpress.org/plugins/plugins-last-updated-column/#developers "Plugins Last Updated Column")
 
-[Description Page](https://stevenkohlmeyer.com/plugins-last-updated-column/ "Plugins Last Updated Column")
-
 Artwork compliments of [Karissa Skirmont](http://kissaskreations.com/ "Kissa's Kreations").
+
+![Plugins Last Updated Column Screenshot 1](/assets/screenshot-1.png)
+![Plugins Last Updated Column Screenshot 2](/assets/screenshot-2.png)
+![Plugins Last Updated Column Screenshot 3](/assets/screenshot-3.png)
 
 ---
 
 Changelot
 =
+* 0.1.2
+  * Version number bump
 * 0.1.1
   * Version number bump
 * 0.1.0
