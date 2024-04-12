@@ -9,8 +9,19 @@ The functionality of this plugin was entirely [Karissa Skirmont](http://kissaskr
 
 Artwork compliments of [Karissa Skirmont](http://kissaskreations.com/ "Kissa's Kreations").
 
+&nbsp;
+&nbsp;
+
 ![Plugins Last Updated Column Screenshot 1](/assets/screenshot-1.png)
+
+&nbsp;
+&nbsp;
+
 ![Plugins Last Updated Column Screenshot 2](/assets/screenshot-2.png)
+
+&nbsp;
+&nbsp;
+
 ![Plugins Last Updated Column Screenshot 3](/assets/screenshot-3.png)
 
 ---
