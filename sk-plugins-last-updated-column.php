@@ -29,8 +29,6 @@ class SK_Plugins_Last_Updated_Column
         add_action ( 'admin_menu', array ( $this, 'menu' ) );
         add_action ( 'admin_notices', array ( $this, 'notices' ) );
         add_action ( 'admin_enqueue_scripts', array ( $this, 'js' ) );
-
-        $this->firstColumnHeading = true;
     }
 
     public function color ( $level )
@@ -328,7 +326,11 @@ class SK_Plugins_Last_Updated_Column
     {
         $screen = get_current_screen ();
 
-        if ( isset( $screen ) and $screen->base === ( "plugins_page_" . $this->slugSettings ) and $_REQUEST[ 'clear-cache' ] == "true" ):
+        if ( 
+            isset( $screen ) and 
+            $screen->base === ( "plugins_page_" . $this->slugSettings ) and 
+            ( isset( $_REQUEST[ 'clear-cache' ] ) and $_REQUEST[ 'clear-cache' ] == "true" )
+            ):
 
             global $wpdb;
 
