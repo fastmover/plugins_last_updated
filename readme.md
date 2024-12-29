@@ -2,8 +2,15 @@
 Plugins Last Updated Column
 =
 ---
-This plugin adds columns to the admin plugin's page to show when each plugin was last updated or upgraded.
-The functionality of this plugin was entirely [Karissa Skirmont](http://kissaskreations.com/ "Kissa's Kreations")'s idea.
+This plugin adds two columns to the plugin's page in WordPress's admin to show when each plugin was "Last Updated" by the developer and when the plugin was "Last Upgraded" on the site. The "Last Updated" column will also show "Plugin not found" OR "Plugin has been closed!" if the plugin isn't on the repo anymore or has been closed.
+
+The first time you load the plugins page, it will load very slowly due to many API calls made to WordPress.org in order to retrieve the last updated information.
+
+This plugin makes 1 API call for each plugin installed. This data is cached for 24 hours, unless you manually clear the cache clearing via Admin Menu > Plugins > Plugin Columns.
+
+
+The idea for this plugin's functionality and the artwork was by [Karissa Skirmont](http://karissaskirmont.com "karissaskirmont.com")'s of [Profoundly Purple](http://profoundlypurple.com "profoundlypurple.com").
+Plugin Developed by [Steven Kohlmeyer](http://stevenkohlmeyer.com "stevenkohlmeyer.com") with contributions by [Michael Preslar (http://drzimp.com "drzimp.com")].
 
 [Plugin Page](https://wordpress.org/plugins/plugins-last-updated-column/#developers "Plugins Last Updated Column")
 
@@ -26,11 +33,12 @@ Artwork compliments of [Karissa Skirmont](http://kissaskreations.com/ "Kissa's K
 
 ---
 
-Changelot
+Changelog
 =
 * 0.1.4
   * Last Updated Column now displays if the plugin has been closed or isn't on the repo
   * getPluginsLastUpdated() now respects WP_DEBUG
+  * Updated plugin description
 * 0.1.3
   * Fixed debug warnings
 * 0.1.2
