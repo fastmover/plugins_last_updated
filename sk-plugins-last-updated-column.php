@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Plugins Last Updated Column
  * Plugin URI: http://stevenkohlmeyer.com/plugins-last-updated-column/
- * Description: This plugin adds a 'Last Updated' column to the admin plugins page.
+ * Description: This plugin adds 'Last Updated' and 'Last Upgraded' columns to the admin plugins page.
  * Version: 0.1.4
  * Author: Fastmover
  * Author URI: http://StevenKohlmeyer.com
@@ -15,7 +15,7 @@ if ( ! defined ( 'ABSPATH' ) ) {
 
 class SK_Plugins_Last_Updated_Column
 {
-    public $cacheTime    = 1800;
+    public $cacheTime    = 86400;
     public $slugUpdated  = "sk-plugin-last-updated ";
     public $slugUpgraded = "sk-plugin-last-upgraded ";
     public $slugSettings = "plugins-last-updated-settings";
