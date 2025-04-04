@@ -2,8 +2,8 @@
 /**
  * Plugin Name: Plugins Last Updated Column
  * Plugin URI: http://stevenkohlmeyer.com/plugins-last-updated-column/
- * Description: This plugin adds a 'Last Updated' column to the admin plugins page.
- * Version: 0.1.4
+ * Description: This plugin adds 'Last Updated' and 'Last Upgraded' columns to the admin plugins page.
+ * Version: 0.1.5
  * Author: Fastmover
  * Author URI: http://StevenKohlmeyer.com
  * License: GPLv2 or later
@@ -15,7 +15,7 @@ if ( ! defined ( 'ABSPATH' ) ) {
 
 class SK_Plugins_Last_Updated_Column
 {
-    public $cacheTime    = 1800;
+    public $cacheTime    = 86400;
     public $slugUpdated  = "sk-plugin-last-updated ";
     public $slugUpgraded = "sk-plugin-last-upgraded ";
     public $slugSettings = "plugins-last-updated-settings";
@@ -85,7 +85,27 @@ class SK_Plugins_Last_Updated_Column
         <span class="lastUpdatedMobileTitle">Last Updated: </span>
         <?php
 
-        if ( $lastUpdated !== "-1" && $lastUpdated !== -1 ) {
+        if ( $lastUpdated === false ) {
+           ?>
+           <span>Not Avail.</span>
+           <?php
+
+        } elseif ( is_numeric( $lastUpdated ) )  {
+            if ( $lastUpdated == -2 ) {
+                ?>
+                <strong class="plugin-last-updated-humanreadable" data-color="#ff0000"><strong>Plugin has been closed!</strong>
+                <?php
+        } elseif ( $lastUpdated == -3 ) {
+                ?>
+                <strong class="plugin-last-updated-humanreadable" data-color="#ff0000">Plugin not found</strong>
+                <?php
+            } else {
+                ?>
+                <span>Not Avail.</span>
+                <?php
+            }
+
+            } else {
 
             if ( ! $this->currentDateTime ) {
                 $this->currentDateTime = new DateTime();
@@ -120,20 +140,11 @@ class SK_Plugins_Last_Updated_Column
 
             ?>
             <span><?php echo $dateLastUpdated; ?></span>
-
-            <?php
-
-        } else {
-            ?>
-            <span>Not Avail.</span>
-            <?php
-        }
-
-        ?>
-        <br/>
-        <span class="plugin-last-updated-humanreadable" data-color="<?php echo $color; ?>"
-              style="background-color: <?php echo $color; ?>"><?php echo $msg; ?></span>
+            <br/>
+            <span class="plugin-last-updated-humanreadable" data-color="<?php echo $color; ?>"
+                  style="background-color: <?php echo $color; ?>"><?php echo $msg; ?></span>
         <?php
+        }
     }
 
     public function columnLastUpgraded ( $columnName, $pluginFile, $pluginData )
@@ -184,8 +195,11 @@ class SK_Plugins_Last_Updated_Column
     function getPluginsLastUpdated ( $pluginSlug )
     {
 
+        $retval = get_transient ( $this->slugUpdated . $pluginSlug );
 
-        if ( ! get_transient ( $this->slugUpdated . $pluginSlug ) ) {
+        if ( ( $retval !== false ) && ( ! defined('WP_DEBUG') || ! WP_DEBUG ) ) {
+            return $retval;
+        }
 
             include_once ( ABSPATH . 'wp-admin/includes/plugin-install.php' );
 
@@ -199,9 +213,42 @@ class SK_Plugins_Last_Updated_Column
 
             /** Check for Errors & Display the results */
             if ( is_wp_error ( $call_api ) ) {
-                set_transient ( $this->slugUpdated . $pluginSlug, -1, $this->cacheTime );
 
-                return -1;
+                /*
+                 * plugin_api() doesn't differentiate between a network issue and a successful
+                 * API request that returns json that contains a key of "error". Examples:
+                 * {"error":"Plugin not found."}
+                 * 
+                   {
+                    "error": "closed",
+                    "name": "Easy Testimonials",
+                    "slug": "easy-testimonials",
+                    "description": "This plugin has been closed as of July 19, 2024 and is not available for download. Reason: Security Issue.",
+                    "closed": true,
+                    "closed_date": "2024-07-19",
+                    "reason": "security-issue",
+                    "reason_text": "Security Issue"
+                  }
+
+                 * Unfortunately, plugin_api() also doesn't pass the returned json into WP_Error,
+                 * so we can't get the "reason" or "closed_date". Best we can do is check the
+                 * error message and go from there.
+                 */
+
+                $retval = false;
+                $errmsg = $call_api->get_error_message();
+
+                if ( $errmsg == 'closed' ) { 
+                    $retval = -2;
+                } elseif ( $errmsg == 'Plugin not found.' ) {
+                    $retval = -3;
+                }
+
+                if ( $retval !== false ) {
+                    set_transient ( $this->slugUpdated . $pluginSlug, $retval, $this->cacheTime );
+                }
+
+                return $retval;
             } else {
                 if ( ! empty( $call_api->last_updated ) ) {
                     set_transient ( $this->slugUpdated . $pluginSlug, $call_api->last_updated,
@@ -209,18 +256,10 @@ class SK_Plugins_Last_Updated_Column
 
                     return $call_api->last_updated;
                 } else {
-                    set_transient ( $this->slugUpdated . $pluginSlug, -1, $this->cacheTime );
 
-                    return -1;
+                    return false;
                 }
             }
-
-        } else {
-            //Debugging purposes:
-            //delete_transient( 'sk_plugins_last_updated' . $pluginSlug );
-
-            return get_transient ( $this->slugUpdated . $pluginSlug );
-        }
     }
 
     function columnHeading ( $columns )
