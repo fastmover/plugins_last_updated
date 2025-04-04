@@ -35,10 +35,12 @@ Artwork compliments of [Karissa Skirmont](http://kissaskreations.com/ "Kissa's K
 
 Changelog
 =
-* 0.1.4
+* 0.1.5
   * Last Updated Column now displays if the plugin has been closed or isn't on the repo
   * getPluginsLastUpdated() now respects WP_DEBUG
   * Updated plugin description
+* 0.1.4
+  * Fixed security issue
 * 0.1.3
   * Fixed debug warnings
 * 0.1.2
