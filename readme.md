@@ -28,6 +28,10 @@ Artwork compliments of [Karissa Skirmont](http://kissaskreations.com/ "Kissa's K
 
 Changelot
 =
+* 0.1.4
+  * Fixed security issue
+* 0.1.3
+  * Fixed debug warnings
 * 0.1.2
   * Version number bump
 * 0.1.1

@@ -3,7 +3,7 @@
  * Plugin Name: Plugins Last Updated Column
  * Plugin URI: http://stevenkohlmeyer.com/plugins-last-updated-column/
  * Description: This plugin adds a 'Last Updated' column to the admin plugins page.
- * Version: 0.1.2
+ * Version: 0.1.4
  * Author: Fastmover
  * Author URI: http://StevenKohlmeyer.com
  * License: GPLv2 or later
@@ -325,17 +325,28 @@ class SK_Plugins_Last_Updated_Column
 
     public function notices ()
     {
-        $screen = get_current_screen ();
+        $screen = get_current_screen();
 
-        if ( 
-            isset( $screen ) and 
-            $screen->base === ( "plugins_page_" . $this->slugSettings ) and 
-            ( isset( $_REQUEST[ 'clear-cache' ] ) and $_REQUEST[ 'clear-cache' ] == "true" )
-            ):
+        if (
+            isset($screen) and
+            $screen->base === ("plugins_page_" . $this->slugSettings) and
+            isset($_REQUEST['clear-cache']) and $_REQUEST['clear-cache'] == "true"
+        ) {
+            // Verify nonce
+            if (!isset($_REQUEST['_wpnonce']) || !wp_verify_nonce($_REQUEST['_wpnonce'], 'clear_plugin_cache')) {
+                ?>
+                <div class="error">
+                    <p>
+                        Invalid request. Please try again.
+                    </p>
+                </div>
+                <?php
+                return;
+            }
 
             global $wpdb;
 
-            $wpdb->query ( "DELETE FROM `" . $wpdb->options . "` WHERE `option_name` LIKE ('%" . $this->slugUpdated . "%')" );
+            $wpdb->query("DELETE FROM `" . $wpdb->options . "` WHERE `option_name` LIKE ('%" . $this->slugUpdated . "%')");
 
             ?>
             <div class="updated">
@@ -345,8 +356,7 @@ class SK_Plugins_Last_Updated_Column
             </div>
             <?php
 
-        endif;
-
+        }
     }
 
     public function roundDown ( $num, $max )
@@ -368,13 +378,13 @@ class SK_Plugins_Last_Updated_Column
     {
 
         $url = ( is_ssl () ? 'https://' : 'http://' ) . $_SERVER[ "HTTP_HOST" ] . $_SERVER[ "REQUEST_URI" ];
-
+        $nonce = wp_create_nonce('clear_plugin_cache');
         ?>
         <div class="wrap">
             <h1>Clear Plugin Cache</h1>
 
             <p>
-                <a href="<?= $url; ?>&clear-cache=true">Clear Update Cache</a>
+                <a href="<?= esc_url(add_query_arg(['clear-cache' => 'true', '_wpnonce' => $nonce], $url)); ?>">Clear Update Cache</a>
             </p>
         </div>
         <?php
