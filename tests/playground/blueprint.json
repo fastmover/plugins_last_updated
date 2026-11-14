@@ -1,0 +1,19 @@
+{
+	"$schema": "https://playground.wordpress.net/blueprint-schema.json",
+	"features": { "networking": true },
+	"login": true,
+	"steps": [
+		{
+			"step": "defineWpConfigConsts",
+			"consts": { "WP_DEBUG": true, "WP_DEBUG_DISPLAY": true }
+		},
+		{
+			"step": "activatePlugin",
+			"pluginPath": "plugins-last-updated-column/sk-plugins-last-updated-column.php"
+		},
+		{
+			"step": "activatePlugin",
+			"pluginPath": "plu-test-fake-wporg/plu-test-fake-wporg.php"
+		}
+	]
+}

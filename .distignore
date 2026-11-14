@@ -1,0 +1,8 @@
+# Files that are not shipped to WordPress.org (used by tests/lib/build-dist.sh and `wp dist-archive`).
+.git
+.gitignore
+.distignore
+readme.md
+tests
+assets
+node_modules

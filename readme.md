@@ -6,13 +6,13 @@ This plugin adds two columns to the plugin's page in WordPress's admin to show w
 
 The first time you load the plugins page, it will load very slowly due to many API calls made to WordPress.org in order to retrieve the last updated information.
 
-This plugin makes 1 API call for each plugin installed. This data is cached for 24 hours, unless you manually clear the cache clearing via Admin Menu > Plugins > Plugin Columns.
+This plugin makes 1 API call for each plugin installed. This data is cached for 24 hours, unless you clear it with the "Clear Update Cache" button at the top of the Plugins page.
 
 
 The idea for this plugin's functionality and the artwork was by [Karissa Skirmont](http://karissaskirmont.com "karissaskirmont.com")'s of [Profoundly Purple](http://profoundlypurple.com "profoundlypurple.com").
-Plugin Developed by [Steven Kohlmeyer](http://stevenkohlmeyer.com "stevenkohlmeyer.com") with contributions by [Michael Preslar (http://drzimp.com "drzimp.com")].
+Plugin Developed by [Steven Kohlmeyer](http://stevenkohlmeyer.com "stevenkohlmeyer.com").
 
-[Plugin Page](https://wordpress.org/plugins/plugins-last-updated-column/#developers "Plugins Last Updated Column")
+[Wordpress's Plugin Page](https://wordpress.org/plugins/plugins-last-updated-column/#developers "Plugins Last Updated Column")
 
 Artwork compliments of [Karissa Skirmont](http://kissaskreations.com/ "Kissa's Kreations").
 
@@ -35,6 +35,10 @@ Artwork compliments of [Karissa Skirmont](http://kissaskreations.com/ "Kissa's K
 
 Changelog
 =
+* 0.1.6
+  * Tested with WordPress 7.1
+  * Security and code cleanup
+  * "Clear Update Cache" is now a button on the Plugins page instead of a separate settings page
 * 0.1.5
   * Last Updated Column now displays if the plugin has been closed or isn't on the repo
   * getPluginsLastUpdated() now respects WP_DEBUG

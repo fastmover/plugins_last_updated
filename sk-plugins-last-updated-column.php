@@ -3,7 +3,9 @@
  * Plugin Name: Plugins Last Updated Column
  * Plugin URI: http://stevenkohlmeyer.com/plugins-last-updated-column/
  * Description: This plugin adds 'Last Updated' and 'Last Upgraded' columns to the admin plugins page.
- * Version: 0.1.5
+ * Version: 0.1.6
+ * Requires at least: 6.0
+ * Requires PHP: 7.4
  * Author: Fastmover
  * Author URI: http://StevenKohlmeyer.com
  * License: GPLv2 or later
@@ -15,10 +17,13 @@ if ( ! defined ( 'ABSPATH' ) ) {
 
 class SK_Plugins_Last_Updated_Column
 {
+    const VERSION = '0.1.6';
+
     public $cacheTime    = 86400;
     public $slugUpdated  = "sk-plugin-last-updated ";
     public $slugUpgraded = "sk-plugin-last-upgraded ";
-    public $slugSettings = "plugins-last-updated-settings";
+    public $argClearCache   = "sk-plu-clear-cache";
+    public $argCacheCleared = "sk-plu-cache-cleared";
     public $currentDateTime = false;
 
     function __construct ()
@@ -27,8 +32,11 @@ class SK_Plugins_Last_Updated_Column
         add_filter ( 'manage_plugins-network_columns', array ( $this, 'columnHeading' ) );
         add_action ( 'manage_plugins_custom_column', array ( $this, 'columnData' ), 10, 3 );
         add_action ( 'admin_head', array ( $this, 'css' ) );
-        add_action ( 'admin_menu', array ( $this, 'menu' ) );
+        add_action ( 'load-plugins.php', array ( $this, 'clearCache' ) );
+        add_action ( 'pre_current_active_plugins', array ( $this, 'clearCacheButton' ) );
         add_action ( 'admin_notices', array ( $this, 'notices' ) );
+        add_action ( 'network_admin_notices', array ( $this, 'notices' ) );
+        add_filter ( 'removable_query_args', array ( $this, 'removableQueryArgs' ) );
         add_action ( 'admin_enqueue_scripts', array ( $this, 'js' ) );
     }
 
@@ -78,24 +86,23 @@ class SK_Plugins_Last_Updated_Column
         $color = "";
         $msg   = "";
 
-        $pluginDirectory = explode ( '/', $pluginFile );
-        $lastUpdated     = $this->getPluginsLastUpdated ( $pluginDirectory[ 0 ] );
+        $lastUpdated = $this->getPluginsLastUpdated ( $this->pluginSlug ( $pluginFile ) );
 
         ?>
         <span class="lastUpdatedMobileTitle">Last Updated: </span>
         <?php
 
         if ( $lastUpdated === false ) {
-           ?>
-           <span>Not Avail.</span>
-           <?php
+            ?>
+            <span>Not Avail.</span>
+            <?php
 
-        } elseif ( is_numeric( $lastUpdated ) )  {
+        } elseif ( is_numeric ( $lastUpdated ) ) {
             if ( $lastUpdated == -2 ) {
                 ?>
-                <strong class="plugin-last-updated-humanreadable" data-color="#ff0000"><strong>Plugin has been closed!</strong>
+                <strong class="plugin-last-updated-humanreadable" data-color="#ff0000">Plugin has been closed!</strong>
                 <?php
-        } elseif ( $lastUpdated == -3 ) {
+            } elseif ( $lastUpdated == -3 ) {
                 ?>
                 <strong class="plugin-last-updated-humanreadable" data-color="#ff0000">Plugin not found</strong>
                 <?php
@@ -105,33 +112,20 @@ class SK_Plugins_Last_Updated_Column
                 <?php
             }
 
-            } else {
+        } else {
 
             if ( ! $this->currentDateTime ) {
                 $this->currentDateTime = new DateTime();
             }
 
             $stringTime          = strtotime ( $lastUpdated );
-            $dateLastUpdated     = Date ( 'Y-m-d', $stringTime );
+            $dateLastUpdated     = gmdate ( 'Y-m-d', $stringTime );
             $lastUpdatedDateTime = new DateTime( $dateLastUpdated );
 
-            if ( phpversion () < "5.3" ) {
-
-                $dayDiff   = (int) ( ( $this->currentDateTime->format ( 'U' ) - $lastUpdatedDateTime->format ( 'U' ) ) / ( 60 * 60 * 24 ) );
-                $monthDiff = (int) ( ( $this->currentDateTime->format ( 'U' ) - $lastUpdatedDateTime->format ( 'U' ) ) / ( 60 * 60 * 24 * 30 ) );
-                $yearDiff  = (int) ( ( $this->currentDateTime->format ( 'U' ) - $lastUpdatedDateTime->format ( 'U' ) ) / ( 60 * 60 * 24 * 365 ) );
-
-                $dayDiff   = $this->roundDown ( $dayDiff, 30 );
-                $monthDiff = $this->roundDown ( $monthDiff, 12 );
-                $yearDiff  = $this->roundDown ( $yearDiff, 365 );
-
-            } else {
-
-                $dayDiff   = $this->currentDateTime->diff ( $lastUpdatedDateTime, true )->d;
-                $monthDiff = $this->currentDateTime->diff ( $lastUpdatedDateTime, true )->m;
-                $yearDiff  = $this->currentDateTime->diff ( $lastUpdatedDateTime, true )->y;
-
-            }
+            $diff      = $this->currentDateTime->diff ( $lastUpdatedDateTime, true );
+            $dayDiff   = $diff->d;
+            $monthDiff = $diff->m;
+            $yearDiff  = $diff->y;
 
             $warningLevel = $this->warningLevel( $yearDiff, $monthDiff, $dayDiff );
             $msg .= $this->message( $yearDiff, $monthDiff, $dayDiff );
@@ -139,12 +133,22 @@ class SK_Plugins_Last_Updated_Column
             $color = $this->color ( $warningLevel );
 
             ?>
-            <span><?php echo $dateLastUpdated; ?></span>
+            <span><?php echo esc_html ( $dateLastUpdated ); ?></span>
             <br/>
-            <span class="plugin-last-updated-humanreadable" data-color="<?php echo $color; ?>"
-                  style="background-color: <?php echo $color; ?>"><?php echo $msg; ?></span>
+            <span class="plugin-last-updated-humanreadable" data-color="<?php echo esc_attr ( $color ); ?>"
+                  style="background-color: <?php echo esc_attr ( $color ); ?>"><?php echo esc_html ( $msg ); ?></span>
         <?php
         }
+    }
+
+    /**
+     * The WordPress.org slug for an installed plugin: its folder name, or the file name for single-file plugins.
+     */
+    public function pluginSlug ( $pluginFile )
+    {
+        $pluginDirectory = explode ( '/', $pluginFile );
+
+        return $pluginDirectory[ 0 ];
     }
 
     public function columnLastUpgraded ( $columnName, $pluginFile, $pluginData )
@@ -181,13 +185,13 @@ class SK_Plugins_Last_Updated_Column
             }
 
             if ( $lastDate !== false ) {
-                $lastUpgradedOutput = Date ( 'Y-m-d' );
+                $lastUpgradedOutput = gmdate ( 'Y-m-d' );
                 update_option ( $lastUpgradedDate, $lastUpgradedOutput );
             }
         }
 
         ?>
-            <span><?php echo $lastUpgradedOutput; ?></span>
+            <span><?php echo esc_html ( $lastUpgradedOutput ); ?></span>
         <?php
 
     }
@@ -203,6 +207,8 @@ class SK_Plugins_Last_Updated_Column
 
             include_once ( ABSPATH . 'wp-admin/includes/plugin-install.php' );
 
+            // plugins_api() raises a PHP warning when WordPress.org can't be reached; that case is handled below.
+            // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
             $call_api = @plugins_api (
                     'plugin_information',
                     array (
@@ -275,8 +281,8 @@ class SK_Plugins_Last_Updated_Column
         ?>
         <style type="text/css">
             @media screen and (max-width: 782px) {
-                #the-list .column-<?= $this->slugUpdated; ?>,
-                #the-list .column-<?= $this->slugUpgraded; ?> {
+                #the-list .column-<?php echo esc_attr ( $this->slugUpdated ); ?>,
+                #the-list .column-<?php echo esc_attr ( $this->slugUpgraded ); ?> {
                     display: block;
                     width: auto;
                 }
@@ -286,19 +292,23 @@ class SK_Plugins_Last_Updated_Column
                     display: inline;
                 }
 
-                tfoot .column-<?= $this->slugUpdated; ?>,
-                tfoot .column-<?= $this->slugUpgraded; ?> {
+                tfoot .column-<?php echo esc_attr ( $this->slugUpdated ); ?>,
+                tfoot .column-<?php echo esc_attr ( $this->slugUpgraded ); ?> {
                     display: none;
                 }
             }
 
-            .column-<?= $this->slugUpdated; ?> span {
+            .column-<?php echo esc_attr ( $this->slugUpdated ); ?> span {
                 white-space: nowrap;
             }
 
             .lastUpdatedMobileTitle,
             .lastUpgradedMobileTitle {
                 display: none;
+            }
+
+            .tablenav .displaying-num .sk-plu-clear-cache {
+                margin-right: 8px;
             }
         </style>
         <?php
@@ -314,16 +324,9 @@ class SK_Plugins_Last_Updated_Column
                 'plugins-last-updated-js',
                 plugin_dir_url ( __FILE__ ) . 'plugins-last-updated.js',
                 array ( 'jquery' ),
-                '1.0',
+                self::VERSION,
                 true
         );
-    }
-
-    public function menu ()
-    {
-        add_submenu_page ( 'plugins.php', 'Plugins Columns', 'Plugin Columns', 'manage_options', $this->slugSettings,
-                array ( $this, 'settings' ) );
-
     }
 
     public function message( $yearDiff, $monthDiff, $dayDiff )
@@ -362,73 +365,79 @@ class SK_Plugins_Last_Updated_Column
 
     }
 
+    /**
+     * Handles the "Clear Update Cache" button on the Plugins screen (site and network admin),
+     * then redirects back so a page refresh doesn't repeat it.
+     */
+    public function clearCache ()
+    {
+        if ( ! isset( $_GET[ $this->argClearCache ] ) ) {
+            return;
+        }
+
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_die( esc_html__( 'Sorry, you are not allowed to clear the update cache.', 'plugins-last-updated-column' ), 403 );
+        }
+
+        check_admin_referer( 'clear_plugin_cache' );
+
+        if ( ! function_exists( 'get_plugins' ) ) {
+            require_once ABSPATH . 'wp-admin/includes/plugin.php';
+        }
+
+        foreach ( array_keys( get_plugins() ) as $pluginFile ) {
+            delete_transient( $this->slugUpdated . $this->pluginSlug( $pluginFile ) );
+        }
+
+        $redirect = remove_query_arg( array( $this->argClearCache, '_wpnonce' ) );
+        wp_safe_redirect( add_query_arg( $this->argCacheCleared, '1', $redirect ) );
+        exit;
+    }
+
+    /**
+     * Prints the button above the plugins table; plugins-last-updated.js moves it next to the item count.
+     */
+    public function clearCacheButton ()
+    {
+        if ( ! current_user_can( 'manage_options' ) ) {
+            return;
+        }
+
+        $url = wp_nonce_url( add_query_arg( $this->argClearCache, '1' ), 'clear_plugin_cache' );
+        ?>
+        <p class="sk-plu-clear-cache-wrap">
+            <a href="<?php echo esc_url( $url ); ?>" class="button button-small sk-plu-clear-cache">Clear Update Cache</a>
+        </p>
+        <?php
+    }
+
     public function notices ()
     {
         $screen = get_current_screen();
 
-        if (
-            isset($screen) and
-            $screen->base === ("plugins_page_" . $this->slugSettings) and
-            isset($_REQUEST['clear-cache']) and $_REQUEST['clear-cache'] == "true"
-        ) {
-            // Verify nonce
-            if (!isset($_REQUEST['_wpnonce']) || !wp_verify_nonce($_REQUEST['_wpnonce'], 'clear_plugin_cache')) {
-                ?>
-                <div class="error">
-                    <p>
-                        Invalid request. Please try again.
-                    </p>
-                </div>
-                <?php
-                return;
-            }
+        // "plugins" on a site, "plugins-network" in Network Admin.
+        if ( ! isset( $screen ) || ! in_array( $screen->base, array( 'plugins', 'plugins-network' ), true ) ) {
+            return;
+        }
 
-            global $wpdb;
-
-            $wpdb->query("DELETE FROM `" . $wpdb->options . "` WHERE `option_name` LIKE ('%" . $this->slugUpdated . "%')");
-
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Only shows a message; nothing is changed.
+        if ( isset( $_GET[ $this->argCacheCleared ] ) ) {
             ?>
-            <div class="updated">
-                <p>
-                    Cache Cleared.
-                </p>
+            <div class="notice notice-success is-dismissible">
+                <p>Cache Cleared.</p>
             </div>
             <?php
-
         }
     }
 
-    public function roundDown ( $num, $max )
+    /**
+     * Lets WordPress remove the "cache cleared" flag from the address bar after the notice is shown.
+     */
+    public function removableQueryArgs ( $args )
     {
-        if( $num === 0 ) {
-            return $num;
-        }
+        $args[] = $this->argCacheCleared;
 
-        $remainder = ( $num % $max );
-
-        if ( $remainder > 0 ) {
-            return $remainder;
-        }
-
-        return $num;
-    }
-
-    public function settings ()
-    {
-
-        $url = ( is_ssl () ? 'https://' : 'http://' ) . $_SERVER[ "HTTP_HOST" ] . $_SERVER[ "REQUEST_URI" ];
-        $nonce = wp_create_nonce('clear_plugin_cache');
-        ?>
-        <div class="wrap">
-            <h1>Clear Plugin Cache</h1>
-
-            <p>
-                <a href="<?= esc_url(add_query_arg(['clear-cache' => 'true', '_wpnonce' => $nonce], $url)); ?>">Clear Update Cache</a>
-            </p>
-        </div>
-        <?php
-
-
+        return $args;
     }
 
     function warningLevel( $yearDiff, $monthDiff, $dayDiff )

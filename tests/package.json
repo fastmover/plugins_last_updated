@@ -1,0 +1,13 @@
+{
+  "name": "plugins-last-updated-column-tests",
+  "private": true,
+  "scripts": {
+    "test:playground": "bash playground/run.sh",
+    "test:container": "bash container/run.sh",
+    "test": "bash run-all.sh"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.64.1",
+    "@wp-playground/cli": "3.1.61"
+  }
+}
